@@ -1,4 +1,4 @@
-# Parte 3 — Suite de Pruebas Unitarias con Partición de Equivalencia
+# Reporte Suite de Pruebas Unitarias con Partición de Equivalencia
 
 Este reporte detalla las clases de equivalencia (CE), los análisis de valores límite (AVL) y el diseño explícito de casos de prueba para cada una de las funciones principales de los módulos de la aplicación, referenciando directamente las funciones de prueba ya implementadas en el código fuente.
 

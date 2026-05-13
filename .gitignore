@@ -60,3 +60,10 @@ venv.bak/
 *.swp
 *.swo
 .DS_Store
+
+# User Specific
+trazabilidad/
+documents/
+.agents/
+docs_report/
+reporte_final.html

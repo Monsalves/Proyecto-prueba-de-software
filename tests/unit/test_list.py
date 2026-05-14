@@ -13,27 +13,32 @@ from objects.list_obj import (
 )
 
 class TestListCreate(unittest.TestCase):
+    # ID: TU-L-01
     def test_list_create_returns_instance(self):
         """[Clase Válida] Verifica que retorne una instancia de List."""
         lst = list_create()
         self.assertIsInstance(lst, List)
 
+    # ID: TU-L-02
     def test_list_create_initial_size(self):
         """[Límite Inferior] Verifica que el tamaño inicial sea 0."""
         lst = list_create()
         self.assertEqual(lst.size, 0)
 
+    # ID: TU-L-03
     def test_list_create_initial_head_tail(self):
         """[Estado Interno] Verifica que cabeza y cola estén limpios."""
         lst = list_create()
         self.assertIsNone(lst._head)
         self.assertIsNone(lst._tail)
 
+    # ID: TU-L-04
     def test_list_create_lock_exists(self):
         """[Concurrencia] Verifica la existencia del cerrojo (Lock)."""
         lst = list_create()
         self.assertTrue(hasattr(lst, '_lock'))
 
+    # ID: TU-L-05
     def test_list_create_multiple_instances(self):
         """[Clase Válida] Verifica que instancias distintas sean independientes."""
         lst1 = list_create()
@@ -41,6 +46,7 @@ class TestListCreate(unittest.TestCase):
         self.assertIsNot(lst1, lst2)
 
 class TestListDestroy(unittest.TestCase):
+    # ID: TU-L-06
     def test_list_destroy_valid(self):
         """[Clase Válida] Destruir una lista con elementos."""
         lst = list_create()
@@ -48,17 +54,20 @@ class TestListDestroy(unittest.TestCase):
         ret = list_destroy(lst)
         self.assertEqual(ret, LIST_OK)
 
+    # ID: TU-L-07
     def test_list_destroy_empty(self):
         """[Límite Inferior] Destruir una lista vacía."""
         lst = list_create()
         ret = list_destroy(lst)
         self.assertEqual(ret, LIST_OK)
 
+    # ID: TU-L-08
     def test_list_destroy_none(self):
         """[Clase Inválida] Pasar None como parámetro."""
         ret = list_destroy(None)
         self.assertEqual(ret, LIST_NULL_PTR)
 
+    # ID: TU-L-09
     def test_list_destroy_clears_nodes(self):
         """[Estado Interno] Verifica que los nodos queden en None tras destrucción."""
         lst = list_create()
@@ -68,6 +77,7 @@ class TestListDestroy(unittest.TestCase):
         self.assertIsNone(lst._tail)
         self.assertEqual(lst.size, 0)
 
+    # ID: TU-L-10
     def test_list_destroy_idempotent(self):
         """[Caso Especial] Destruir repetidas veces la misma lista."""
         lst = list_create()
@@ -76,6 +86,7 @@ class TestListDestroy(unittest.TestCase):
         self.assertEqual(ret, LIST_OK)
 
 class TestListInsert(unittest.TestCase):
+    # ID: TU-L-11
     def test_list_insert_valid(self):
         """[Clase Válida] Inserción simple de un elemento."""
         lst = list_create()
@@ -83,11 +94,13 @@ class TestListInsert(unittest.TestCase):
         self.assertEqual(ret, LIST_OK)
         self.assertEqual(lst.size, 1)
 
+    # ID: TU-L-12
     def test_list_insert_none(self):
         """[Clase Inválida] Inserción en parámetro None."""
         ret = list_insert(None, 42)
         self.assertEqual(ret, LIST_NULL_PTR)
 
+    # ID: TU-L-13
     def test_list_insert_multiple(self):
         """[Clase Válida] Inserción de múltiples elementos en orden."""
         lst = list_create()
@@ -97,12 +110,14 @@ class TestListInsert(unittest.TestCase):
         self.assertEqual(lst.size, 3)
         self.assertEqual(lst._tail.data, 3)
 
+    # ID: TU-L-14
     def test_list_insert_negative(self):
         """[Caso Especial] Inserción de un número negativo."""
         lst = list_create()
         list_insert(lst, -99)
         self.assertEqual(lst._head.data, -99)
 
+    # ID: TU-L-15
     def test_list_insert_large_value(self):
         """[Límite Superior] Inserción de un valor extremo simulado (INT_MAX)."""
         lst = list_create()
@@ -117,27 +132,32 @@ class TestListRemove(unittest.TestCase):
         list_insert(self.lst, 20)
         list_insert(self.lst, 30)
 
+    # ID: TU-L-16
     def test_list_remove_middle(self):
         """[Clase Válida] Remover el elemento central."""
         ret = list_remove(self.lst, 1)
         self.assertEqual(ret, LIST_OK)
         self.assertEqual(self.lst.size, 2)
 
+    # ID: TU-L-17
     def test_list_remove_none(self):
         """[Clase Inválida] Remover usando parámetro None."""
         ret = list_remove(None, 0)
         self.assertEqual(ret, LIST_NULL_PTR)
 
+    # ID: TU-L-18
     def test_list_remove_out_of_bounds_negative(self):
         """[Límite Inferior] Remover índice negativo."""
         ret = list_remove(self.lst, -1)
         self.assertEqual(ret, LIST_OUT_OF_BOUNDS)
 
+    # ID: TU-L-19
     def test_list_remove_out_of_bounds_upper(self):
         """[Límite Superior] Remover índice igual o mayor al tamaño."""
         ret = list_remove(self.lst, 3)
         self.assertEqual(ret, LIST_OUT_OF_BOUNDS)
 
+    # ID: TU-L-20
     def test_list_remove_head_and_tail(self):
         """[Caso Especial] Remover inicio y luego el final."""
         list_remove(self.lst, 0)
@@ -147,6 +167,7 @@ class TestListRemove(unittest.TestCase):
         self.assertEqual(self.lst.size, 1)
 
 class TestListClear(unittest.TestCase):
+    # ID: TU-L-21
     def test_list_clear_populated(self):
         """[Clase Válida] Limpiar lista poblada."""
         lst = list_create()
@@ -154,17 +175,20 @@ class TestListClear(unittest.TestCase):
         list_clear(lst)
         self.assertEqual(lst.size, 0)
 
+    # ID: TU-L-22
     def test_list_clear_empty(self):
         """[Límite Inferior] Limpiar lista que ya estaba vacía."""
         lst = list_create()
         ret = list_clear(lst)
         self.assertEqual(ret, LIST_OK)
 
+    # ID: TU-L-23
     def test_list_clear_none(self):
         """[Clase Inválida] Limpiar con parámetro None."""
         ret = list_clear(None)
         self.assertEqual(ret, LIST_NULL_PTR)
 
+    # ID: TU-L-24
     def test_list_clear_node_state(self):
         """[Estado Interno] Verificación de punteros en NULL tras limpieza."""
         lst = list_create()
@@ -173,6 +197,7 @@ class TestListClear(unittest.TestCase):
         self.assertIsNone(lst._head)
         self.assertIsNone(lst._tail)
 
+    # ID: TU-L-25
     def test_list_clear_insert_after(self):
         """[Caso Especial] Inserción en lista recién limpiada."""
         lst = list_create()
@@ -188,27 +213,32 @@ class TestListGet(unittest.TestCase):
         list_insert(self.lst, 100)
         list_insert(self.lst, 200)
 
+    # ID: TU-L-26
     def test_list_get_valid(self):
         """[Clase Válida] Obtener un valor existente."""
         code, val = list_get(self.lst, 1)
         self.assertEqual(code, LIST_OK)
         self.assertEqual(val, 200)
 
+    # ID: TU-L-27
     def test_list_get_none(self):
         """[Clase Inválida] Obtener usando None."""
         code, val = list_get(None, 0)
         self.assertEqual(code, LIST_NULL_PTR)
 
+    # ID: TU-L-28
     def test_list_get_negative_pos(self):
         """[Límite Inferior] Obtener con índice negativo."""
         code, val = list_get(self.lst, -5)
         self.assertEqual(code, LIST_OUT_OF_BOUNDS)
 
+    # ID: TU-L-29
     def test_list_get_out_of_bounds(self):
         """[Límite Superior] Obtener con índice fuera de rango."""
         code, val = list_get(self.lst, 2)
         self.assertEqual(code, LIST_OUT_OF_BOUNDS)
 
+    # ID: TU-L-30
     def test_list_get_empty_list(self):
         """[Caso Especial] Obtener desde una lista vacía."""
         empty_lst = list_create()
@@ -216,21 +246,25 @@ class TestListGet(unittest.TestCase):
         self.assertEqual(code, LIST_OUT_OF_BOUNDS)
 
 class TestListSize(unittest.TestCase):
+    # ID: TU-L-31
     def test_list_size_empty(self):
         """[Límite Inferior] Tamaño de lista vacía."""
         lst = list_create()
         self.assertEqual(list_size(lst), 0)
 
+    # ID: TU-L-32
     def test_list_size_populated(self):
         """[Clase Válida] Tamaño tras inserciones."""
         lst = list_create()
         list_insert(lst, 1)
         self.assertEqual(list_size(lst), 1)
 
+    # ID: TU-L-33
     def test_list_size_none(self):
         """[Clase Inválida] Tamaño con parámetro None."""
         self.assertEqual(list_size(None), LIST_NULL_PTR)
 
+    # ID: TU-L-34
     def test_list_size_after_insert(self):
         """[Estado Transicional] Incremento progresivo de tamaño."""
         lst = list_create()
@@ -238,6 +272,7 @@ class TestListSize(unittest.TestCase):
         list_insert(lst, 2)
         self.assertEqual(list_size(lst), 2)
 
+    # ID: TU-L-35
     def test_list_size_after_remove(self):
         """[Estado Transicional] Decremento progresivo de tamaño."""
         lst = list_create()
@@ -251,23 +286,28 @@ class TestListContains(unittest.TestCase):
         list_insert(self.lst, 55)
         list_insert(self.lst, 66)
 
+    # ID: TU-L-36
     def test_list_contains_true(self):
         """[Clase Válida] Buscar elemento existente."""
         self.assertEqual(list_contains(self.lst, 66), 1)
 
+    # ID: TU-L-37
     def test_list_contains_false(self):
         """[Clase Válida] Buscar elemento no existente."""
         self.assertEqual(list_contains(self.lst, 99), 0)
 
+    # ID: TU-L-38
     def test_list_contains_none(self):
         """[Clase Inválida] Buscar en lista None."""
         self.assertEqual(list_contains(None, 55), LIST_NULL_PTR)
 
+    # ID: TU-L-39
     def test_list_contains_empty(self):
         """[Límite Inferior] Buscar en lista vacía."""
         empty_lst = list_create()
         self.assertEqual(list_contains(empty_lst, 55), 0)
 
+    # ID: TU-L-40
     def test_list_contains_duplicates(self):
         """[Caso Especial] Buscar cuando el valor está duplicado."""
         list_insert(self.lst, 55)

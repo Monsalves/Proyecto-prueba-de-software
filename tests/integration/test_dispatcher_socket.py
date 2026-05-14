@@ -1,12 +1,3 @@
-"""
-test_dispatcher_socket.py — Pruebas de Integración: Dispatcher + SocketStub
-Proyecto: Bus de Objetos en Python — Etapa 3
-Descripción: Usa el SocketStub para simular tramas crudas de protocolo TCP
-             pasando por el flujo completo: SocketStub → Serializer →
-             Dispatcher → ObjectServer → respuesta serializada al socket.
-             No se levanta ningún servidor TCP real.
-"""
-
 import unittest
 from src.server.object_server import _reset_server
 from src.server.dispatcher import dispatch

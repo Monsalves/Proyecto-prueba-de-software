@@ -35,15 +35,18 @@ class TestDispatcherList(unittest.TestCase):
         self.list_id = _dispatch_create("LIST")
 
     # ─── Operación válida ──────────────────────────────────────
+    # ID: TI-DS-01
     def test_insert_valid(self):
         response = dispatch(make_list_insert(self.list_id, 10))
         self.assertTrue(response.startswith("OK|"), msg=response)
 
+    # ID: TI-DS-02
     def test_get_valid_after_insert(self):
         dispatch(make_list_insert(self.list_id, 42))
         response = dispatch(make_list_get(self.list_id, 0))
         self.assertIn("42", response)
 
+    # ID: TI-DS-03
     def test_size_valid(self):
         dispatch(make_list_insert(self.list_id, 1))
         dispatch(make_list_insert(self.list_id, 2))
@@ -51,33 +54,39 @@ class TestDispatcherList(unittest.TestCase):
         response = dispatch(make_list_size(self.list_id))
         self.assertIn("3", response)
 
+    # ID: TI-DS-04
     def test_contains_valid_found(self):
         dispatch(make_list_insert(self.list_id, 7))
         response = dispatch(make_list_contains(self.list_id, 7))
         self.assertTrue(response.startswith("OK|"))
 
+    # ID: TI-DS-05
     def test_remove_valid(self):
         dispatch(make_list_insert(self.list_id, 5))
         response = dispatch(make_list_remove(self.list_id, 0))
         self.assertTrue(response.startswith("OK|"))
 
     # ─── Operación sobre estructura vacía ─────────────────────
+    # ID: TI-DS-06
     def test_get_on_empty_list(self):
         """GET sobre lista vacía retorna ERROR de índice fuera de rango."""
         response = dispatch(make_list_get(self.list_id, 0))
         self.assertTrue(response.startswith("ERROR|"), msg=response)
 
+    # ID: TI-DS-07
     def test_remove_on_empty_list(self):
         """REMOVE sobre lista vacía retorna ERROR."""
         response = dispatch(make_list_remove(self.list_id, 0))
         self.assertTrue(response.startswith("ERROR|"))
 
+    # ID: TI-DS-08
     def test_size_on_empty_list_returns_zero(self):
         """SIZE sobre lista vacía retorna 0."""
         response = dispatch(make_list_size(self.list_id))
         self.assertIn("0", response)
 
     # ─── Índice inválido ──────────────────────────────────────
+    # ID: TI-DS-09
     def test_get_out_of_bounds(self):
         """GET en índice fuera de rango retorna ERROR|OUT_OF_BOUNDS."""
         dispatch(make_list_insert(self.list_id, 10))
@@ -85,6 +94,7 @@ class TestDispatcherList(unittest.TestCase):
         self.assertTrue(response.startswith("ERROR|"))
         self.assertIn("OUT_OF_BOUNDS", response)
 
+    # ID: TI-DS-10
     def test_remove_out_of_bounds(self):
         """REMOVE en índice fuera de rango retorna ERROR|OUT_OF_BOUNDS."""
         dispatch(make_list_insert(self.list_id, 10))
@@ -92,6 +102,7 @@ class TestDispatcherList(unittest.TestCase):
         self.assertTrue(response.startswith("ERROR|"))
         self.assertIn("OUT_OF_BOUNDS", response)
 
+    # ID: TI-DS-11
     def test_get_negative_index(self):
         """GET con índice negativo retorna ERROR."""
         dispatch(make_list_insert(self.list_id, 10))
@@ -109,15 +120,18 @@ class TestDispatcherStack(unittest.TestCase):
         self.stack_id = _dispatch_create("STACK")
 
     # ─── Operación válida ──────────────────────────────────────
+    # ID: TI-DS-12
     def test_push_valid(self):
         response = dispatch(make_stack_push(self.stack_id, 100))
         self.assertTrue(response.startswith("OK|"))
 
+    # ID: TI-DS-13
     def test_pop_valid_after_push(self):
         dispatch(make_stack_push(self.stack_id, 55))
         response = dispatch(make_stack_pop(self.stack_id))
         self.assertIn("55", response)
 
+    # ID: TI-DS-14
     def test_peek_does_not_remove_element(self):
         dispatch(make_stack_push(self.stack_id, 77))
         response1 = dispatch(make_stack_peek(self.stack_id))
@@ -125,6 +139,7 @@ class TestDispatcherStack(unittest.TestCase):
         self.assertIn("77", response1)
         self.assertIn("77", response2)
 
+    # ID: TI-DS-15
     def test_push_multiple_pop_lifo_order(self):
         """Verifica orden LIFO: último en entrar, primero en salir."""
         for v in [1, 2, 3]:
@@ -133,12 +148,14 @@ class TestDispatcherStack(unittest.TestCase):
         self.assertIn("3", resp)
 
     # ─── Operación sobre estructura vacía ─────────────────────
+    # ID: TI-DS-16
     def test_pop_on_empty_stack(self):
         """POP sobre pila vacía retorna ERROR|STACK_EMPTY."""
         response = dispatch(make_stack_pop(self.stack_id))
         self.assertTrue(response.startswith("ERROR|"))
         self.assertIn("STACK_EMPTY", response)
 
+    # ID: TI-DS-17
     def test_peek_on_empty_stack(self):
         """PEEK sobre pila vacía retorna ERROR|STACK_EMPTY."""
         response = dispatch(make_stack_peek(self.stack_id))
@@ -156,20 +173,24 @@ class TestDispatcherTree(unittest.TestCase):
         self.tree_id = _dispatch_create("TREE")
 
     # ─── Operación válida ──────────────────────────────────────
+    # ID: TI-DS-18
     def test_insert_valid(self):
         response = dispatch(make_tree_insert(self.tree_id, 50))
         self.assertTrue(response.startswith("OK|"))
 
+    # ID: TI-DS-19
     def test_search_found(self):
         dispatch(make_tree_insert(self.tree_id, 30))
         response = dispatch(make_tree_search(self.tree_id, 30))
         self.assertIn("FOUND", response)
 
+    # ID: TI-DS-20
     def test_delete_valid(self):
         dispatch(make_tree_insert(self.tree_id, 20))
         response = dispatch(make_tree_delete(self.tree_id, 20))
         self.assertTrue(response.startswith("OK|"))
 
+    # ID: TI-DS-21
     def test_inorder_sorted(self):
         for v in [30, 10, 20]:
             dispatch(make_tree_insert(self.tree_id, v))
@@ -177,12 +198,14 @@ class TestDispatcherTree(unittest.TestCase):
         self.assertIn("10,20,30", response)
 
     # ─── Operación sobre estructura vacía ─────────────────────
+    # ID: TI-DS-22
     def test_inorder_on_empty_tree(self):
         """INORDER sobre árbol vacío retorna ERROR|TREE_EMPTY."""
         response = dispatch(make_tree_inorder(self.tree_id))
         self.assertTrue(response.startswith("ERROR|"))
         self.assertIn("TREE_EMPTY", response)
 
+    # ID: TI-DS-23
     def test_delete_on_empty_tree(self):
         """DELETE en árbol vacío retorna ERROR|NOT_FOUND."""
         response = dispatch(make_tree_delete(self.tree_id, 999))
@@ -190,6 +213,7 @@ class TestDispatcherTree(unittest.TestCase):
         self.assertIn("NOT_FOUND", response)
 
     # ─── Elemento inexistente / índice inválido ────────────────
+    # ID: TI-DS-24
     def test_search_not_found(self):
         """SEARCH de un valor no insertado retorna ERROR|NOT_FOUND."""
         dispatch(make_tree_insert(self.tree_id, 10))
@@ -197,6 +221,7 @@ class TestDispatcherTree(unittest.TestCase):
         self.assertTrue(response.startswith("ERROR|"))
         self.assertIn("NOT_FOUND", response)
 
+    # ID: TI-DS-25
     def test_delete_not_found(self):
         """DELETE de un valor no insertado retorna ERROR|NOT_FOUND."""
         dispatch(make_tree_insert(self.tree_id, 10))
@@ -204,6 +229,7 @@ class TestDispatcherTree(unittest.TestCase):
         self.assertTrue(response.startswith("ERROR|"))
         self.assertIn("NOT_FOUND", response)
 
+    # ID: TI-DS-26
     def test_size_after_inserts_and_deletes(self):
         """SIZE refleja correctamente las mutaciones de inserción y borrado."""
         for v in [5, 10, 15]:

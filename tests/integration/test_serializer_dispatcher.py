@@ -1,11 +1,3 @@
-"""
-test_serializer_dispatcher.py — Pruebas de Integración: Serializer↔Dispatcher
-Proyecto: Bus de Objetos en Python — Etapa 3
-Descripción: Prueba la interfaz entre el Serializer (protocolo crudo) y el Dispatcher.
-             Cubre: mensaje válido de cada tipo de objeto, mensaje con ID inexistente,
-             y mensaje malformado (no parseables por el protocolo).
-"""
-
 import unittest
 from src.server.object_server import _reset_server
 from src.server.dispatcher import dispatch

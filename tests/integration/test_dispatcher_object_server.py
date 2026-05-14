@@ -1,11 +1,3 @@
-"""
-test_dispatcher_object_server.py — Pruebas de Integración: Dispatcher↔ObjectServer
-Proyecto: Bus de Objetos en Python — Etapa 3
-Descripción: Cubre la interfaz entre Dispatcher y ObjectServer:
-             crear múltiples instancias simultáneamente, obtener por ID correcto
-             e ID inexistente.
-"""
-
 import unittest
 import threading
 from src.server.object_server import (

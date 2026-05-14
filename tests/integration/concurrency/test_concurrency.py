@@ -37,6 +37,7 @@ class TestConcurrentInstanceCreation(unittest.TestCase):
     def setUp(self):
         _reset_server()
 
+    # ID: TC-01
     def test_ten_threads_create_unique_ids(self):
         """10 hilos crean via Dispatcher simultáneamente → IDs únicos."""
         results: list = []
@@ -61,6 +62,7 @@ class TestConcurrentInstanceCreation(unittest.TestCase):
         self.assertTrue(all(c == SERVER_OK for c in codes), "Algún CREATE falló")
         self.assertEqual(len(set(ids)), 10, "Se detectaron IDs duplicados en creación concurrente")
 
+    # ID: TC-02
     def test_ten_threads_mixed_types_unique_ids(self):
         """10 hilos con tipos mixtos → todos los IDs son únicos."""
         results: list = []
@@ -85,6 +87,7 @@ class TestConcurrentInstanceCreation(unittest.TestCase):
         ids = [r[1] for r in results]
         self.assertEqual(len(set(ids)), 10, "IDs duplicados en creación mixta concurrente")
 
+    # ID: TC-03
     def test_concurrent_creates_all_retrievable(self):
         """10 hilos crean instancias; todas son recuperables después de la concurrencia."""
         results: list = []
@@ -106,6 +109,7 @@ class TestConcurrentInstanceCreation(unittest.TestCase):
             code, obj = server_get(iid)
             self.assertEqual(code, SERVER_OK, f"No se pudo recuperar instancia {iid}")
 
+    # ID: TC-04
     def test_no_id_collision_across_100_creates(self):
         """100 creates concurrentes no deben producir ningún ID duplicado."""
         ids: list = []
@@ -135,6 +139,7 @@ class TestConcurrentOperationsOnSameInstance(unittest.TestCase):
     def setUp(self):
         _reset_server()
 
+    # ID: TC-05
     def test_ten_threads_insert_list_no_corruption(self):
         """10 hilos insertan valores en la misma List vía Dispatcher."""
         response = dispatch(make_create("LIST"))
@@ -159,6 +164,7 @@ class TestConcurrentOperationsOnSameInstance(unittest.TestCase):
         size_response = dispatch(make_list_size(list_id))
         self.assertIn("50", size_response, "La lista no tiene 50 elementos tras 10 hilos×5 inserciones")
 
+    # ID: TC-06
     def test_ten_threads_push_stack_no_corruption(self):
         """10 hilos hacen push sobre la misma Stack; ningún error."""
         response = dispatch(make_create("STACK"))
@@ -181,6 +187,7 @@ class TestConcurrentOperationsOnSameInstance(unittest.TestCase):
 
         self.assertEqual(errors, [], f"Errores en push concurrentes: {errors}")
 
+    # ID: TC-07
     def test_ten_threads_insert_tree_unique_values(self):
         """10 hilos insertan valores únicos en el mismo Tree; inorden debe ser creciente."""
         response = dispatch(make_create("TREE"))
@@ -203,6 +210,7 @@ class TestConcurrentOperationsOnSameInstance(unittest.TestCase):
         self.assertEqual(result, sorted(result), "El inorden no es creciente tras inserciones concurrentes")
         self.assertEqual(len(result), 10, "No se insertaron los 10 valores únicos")
 
+    # ID: TC-08
     def test_concurrent_insert_and_search_tree_no_crash(self):
         """5 hilos insertan y 5 hilos leen el mismo Tree sin excepción."""
         response = dispatch(make_create("TREE"))
@@ -238,6 +246,7 @@ class TestConcurrentOperationsOnSameInstance(unittest.TestCase):
 
         self.assertEqual(errors, [], f"Excepciones en operaciones concurrentes: {errors}")
 
+    # ID: TC-09
     def test_ten_threads_pop_stack_no_negative_size(self):
         """10 hilos hacen push y pop; el tamaño final nunca es negativo."""
         response = dispatch(make_create("STACK"))
@@ -270,6 +279,7 @@ class TestConcurrentServerIntegrity(unittest.TestCase):
     def setUp(self):
         _reset_server()
 
+    # ID: TC-10
     def test_instance_count_consistent_after_concurrent_creates(self):
         """El conteo del servidor refleja exactamente el número de creates exitosos."""
         ids: list = []

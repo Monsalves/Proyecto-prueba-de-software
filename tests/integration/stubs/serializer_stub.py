@@ -169,3 +169,52 @@ def make_malformed(obj_type: str, operation: str, instance_id: int) -> BusMessag
         data_int=0,
         has_data=False,
     )
+
+
+def make_create(obj_type: str) -> BusMessage:
+    """Crea un BusMessage para solicitar la creación de una instancia."""
+    return BusMessage(
+        obj_type=obj_type,
+        operation="CREATE",
+        instance_id=0,
+        data="",
+        data_int=0,
+        has_data=False,
+    )
+
+
+def make_destroy(instance_id: int, obj_type: str = "") -> BusMessage:
+    """Crea un BusMessage para destruir una instancia."""
+    return BusMessage(
+        obj_type=obj_type,
+        operation="DESTROY",
+        instance_id=instance_id,
+        data="",
+        data_int=0,
+        has_data=False,
+    )
+
+
+def make_list_contains(instance_id: int, value: int) -> BusMessage:
+    """Crea un BusMessage para verificar si un valor existe en una List."""
+    return BusMessage(
+        obj_type="LIST",
+        operation="CONTAINS",
+        instance_id=instance_id,
+        data=str(value),
+        data_int=value,
+        has_data=True,
+    )
+
+
+def make_tree_size(instance_id: int) -> BusMessage:
+    """Crea un BusMessage para consultar el tamaño de un Tree."""
+    return BusMessage(
+        obj_type="TREE",
+        operation="SIZE",
+        instance_id=instance_id,
+        data="",
+        data_int=0,
+        has_data=False,
+    )
+

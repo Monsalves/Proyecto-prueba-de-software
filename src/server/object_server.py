@@ -3,7 +3,7 @@ object_server.py — Registro Global de Instancias de Objetos (Thread-Safe)
 Proyecto: Bus de Objetos en Python — Etapa 3
 Descripción: Mantiene un registro global de instancias (List, Stack, Tree).
              El diccionario y el contador de IDs están protegidos por threading.Lock.
-             Funciones: create, get, delete.
+             Funciones: create, get, destroy.
 """
 
 import threading
@@ -95,9 +95,9 @@ def server_get(instance_id: int | None) -> tuple[int, object | None]:
     return (SERVER_OK, instance)
 
 
-def server_delete(instance_id: int | None) -> int:
+def server_destroy(instance_id: int | None) -> int:
     """
-    Elimina la instancia registrada bajo el ID dado.
+    Destruye la instancia registrada bajo el ID dado.
 
     Retorna:
         SERVER_OK si se eliminó correctamente.

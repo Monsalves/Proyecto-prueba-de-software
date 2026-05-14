@@ -12,6 +12,8 @@ from src.protocol.serializer import (
 )
 from src.server.object_server import (
     server_get,
+    server_create,
+    server_destroy,
     SERVER_OK,
     SERVER_NOT_FOUND,
 )
@@ -43,13 +45,28 @@ def dispatch(msg: BusMessage | None) -> str:
     if msg is None:
         return serialize_response(False, "NULL_MESSAGE")
 
-    # Resolver instancia en el servidor
+    obj_type = msg.obj_type
+    operation = msg.operation
+
+    # ─── Operaciones a nivel de servidor ──────────────────────────
+    if operation == "CREATE":
+        code, instance_id = server_create(obj_type)
+        if code == SERVER_OK:
+            return serialize_response(True, str(instance_id))
+        return serialize_response(False, f"CREATE_ERROR:{code}")
+
+    if operation == "DESTROY":
+        code = server_destroy(msg.instance_id)
+        if code == SERVER_OK:
+            return serialize_response(True, "DESTROYED")
+        if code == SERVER_NOT_FOUND:
+            return serialize_response(False, f"INSTANCE_NOT_FOUND:{msg.instance_id}")
+        return serialize_response(False, f"DESTROY_ERROR:{code}")
+
+    # Resolver instancia en el servidor para operaciones de objeto
     code, instance = server_get(msg.instance_id)
     if code == SERVER_NOT_FOUND:
         return serialize_response(False, f"INSTANCE_NOT_FOUND:{msg.instance_id}")
-
-    obj_type = msg.obj_type
-    operation = msg.operation
 
     # ─── Despacho a LIST ──────────────────────────────────────
     if obj_type == "LIST":

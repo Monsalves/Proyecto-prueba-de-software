@@ -2,6 +2,10 @@ name: Bus de Objetos CI (Etapa 2)
 
 on: [push, pull_request]
 
+permissions:
+  contents: read
+  issues: write
+
 jobs:
   build_and_test:
     runs-on: ubuntu-latest
@@ -18,11 +22,11 @@ jobs:
     - name: Instalar dependencias
       run: |
         python -m pip install --upgrade pip
-        pip install pytest pytest-html
+        pip install pytest pytest-html pytest-json-report
 
     - name: Ejecutar Todas las Pruebas y Generar Reporte
       run: |
-        pytest tests/ --html=reporte_tests.html --self-contained-html
+        pytest tests/ --html=reporte_tests.html --self-contained-html --json-report --json-report-file=report.json
 
     - name: Subir Reporte HTML
       uses: actions/upload-artifact@v4
@@ -30,3 +34,10 @@ jobs:
       with:
         name: reporte-tests-html
         path: reporte_tests.html
+
+    - name: Publicar Resultados en GitHub Issues
+      if: always()
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        python scripts/publish_test_results.py

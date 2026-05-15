@@ -26,7 +26,7 @@ jobs:
 
     - name: Ejecutar Todas las Pruebas y Generar Reporte
       run: |
-        pytest tests/ --html=reporte_tests.html --self-contained-html --json-report --json-report-file=report.json
+        PYTHONPATH=. pytest tests/ --html=reporte_tests.html --self-contained-html --json-report --json-report-file=report.json
 
     - name: Subir Reporte HTML
       uses: actions/upload-artifact@v4

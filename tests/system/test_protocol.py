@@ -1,3 +1,4 @@
+import pytest
 """
 test_protocol.py — Pruebas de Protocolo y Robustez del Bus de Objetos
 Proyecto: Bus de Objetos en Python — Etapa 4
@@ -62,6 +63,7 @@ class TestProtocolRobustness(unittest.TestCase):
 
     # ─── Caso 1: Mensaje malformado (sin separadores '|') ─────
 
+    @pytest.mark.test_id("TS-PR-01")
     def test_malformed_message_no_separators(self):
         """Envía un mensaje sin el carácter '|'. Espera ERROR."""
         response = self.client.send_raw("ESTO_NO_TIENE_SEPARADORES\n")
@@ -72,6 +74,7 @@ class TestProtocolRobustness(unittest.TestCase):
 
     # ─── Caso 2: Objeto inválido ──────────────────────────────
 
+    @pytest.mark.test_id("TS-PR-02")
     def test_invalid_object_type(self):
         """Envía QUEUE|CREATE|0| — QUEUE no es un tipo válido."""
         response = self.client.send_raw("QUEUE|CREATE|0|\n")
@@ -81,6 +84,7 @@ class TestProtocolRobustness(unittest.TestCase):
 
     # ─── Caso 3: ID de instancia inexistente ──────────────────
 
+    @pytest.mark.test_id("TS-PR-03")
     def test_nonexistent_instance_id(self):
         """Envía LIST|GET|999|0 — el ID 999 no existe."""
         response = self.client.send_raw("LIST|GET|999|0\n")
@@ -90,6 +94,7 @@ class TestProtocolRobustness(unittest.TestCase):
 
     # ─── Caso 4: Operación sobre estructura vacía ─────────────
 
+    @pytest.mark.test_id("TS-PR-04")
     def test_operation_on_empty_structure(self):
         """Crea un Stack y hace POP sin push previo. Espera ERROR."""
         # Crear stack para obtener un ID válido
@@ -104,6 +109,7 @@ class TestProtocolRobustness(unittest.TestCase):
 
     # ─── Caso 5: Índice fuera de rango ────────────────────────
 
+    @pytest.mark.test_id("TS-PR-05")
     def test_index_out_of_range(self):
         """Crea una List con 3 elementos e intenta GET en posición 100."""
         list_id = self.client.list_create()
@@ -118,18 +124,21 @@ class TestProtocolRobustness(unittest.TestCase):
 
     # ─── Casos adicionales de robustez ────────────────────────
 
+    @pytest.mark.test_id("TS-PR-06")
     def test_empty_message(self):
         """Envía solo un newline."""
         response = self.client.send_raw("\n")
         self.assertIn("ERROR", response)
         self._assert_server_alive()
 
+    @pytest.mark.test_id("TS-PR-07")
     def test_partial_message(self):
         """Envía un mensaje con solo 2 campos."""
         response = self.client.send_raw("LIST|CREATE\n")
         self.assertIn("ERROR", response)
         self._assert_server_alive()
 
+    @pytest.mark.test_id("TS-PR-08")
     def test_negative_instance_id(self):
         """Envía un ID negativo."""
         response = self.client.send_raw("LIST|GET|-1|0\n")

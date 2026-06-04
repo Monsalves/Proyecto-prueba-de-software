@@ -3,27 +3,7 @@ import os
 import subprocess
 import sys
 
-def extract_test_ids(log_path="tests/test_ids.log"):
-    """
-    Lee el archivo de log/mapeo de pruebas y retorna un diccionario
-    mapeando el nombre de la prueba con su ID.
-    """
-    mapping = {}
-    if not os.path.exists(log_path):
-        print(f"Advertencia: No se encontró el archivo de mapeo {log_path}")
-        return mapping
-        
-    with open(log_path, 'r', encoding='utf-8') as f:
-        for line in f:
-            stripped = line.strip()
-            if not stripped or stripped.startswith('#'):
-                continue
-            if ':' in stripped:
-                test_name, test_id = stripped.split(':', 1)
-                mapping[test_name.strip()] = test_id.strip()
-    return mapping
-
-def generate_markdown(report_file, mapping):
+def generate_markdown(report_file):
     """
     Lee el JSON de pytest y genera el Markdown con los resultados.
     """
@@ -33,6 +13,7 @@ def generate_markdown(report_file, mapping):
         
     with open(report_file, 'r', encoding='utf-8') as f:
         report = json.load(f)
+
         
     commit_sha = os.environ.get('GITHUB_SHA', 'local-run')
     short_sha = commit_sha[:7] if commit_sha != 'local-run' else 'Local'
@@ -64,7 +45,7 @@ def generate_markdown(report_file, mapping):
         test_name = nodeid.split('::')[-1]
         base_name = test_name.split('[')[0]  # Por si hay pruebas parametrizadas
         
-        test_id = mapping.get(base_name, "Sin ID")
+        test_id = test.get('metadata', {}).get('test_id', 'Sin ID')
         outcome = test.get('outcome', 'unknown')
         
         if outcome == 'passed':
@@ -118,12 +99,8 @@ def publish_issue(markdown_body):
         sys.exit(1)
 
 if __name__ == "__main__":
-    print("Cargando IDs de pruebas desde tests/test_ids.log...")
-    mapping = extract_test_ids()
-    print(f"Se encontraron {len(mapping)} pruebas mapeadas con IDs.")
-    
     print("Generando Markdown...")
-    markdown = generate_markdown("report.json", mapping)
+    markdown = generate_markdown("report.json")
     
     # En entorno local sin GITHUB_TOKEN esto fallará, 
     # pero está pensado para correr en GitHub Actions.

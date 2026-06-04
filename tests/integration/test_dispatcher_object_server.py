@@ -1,3 +1,4 @@
+import pytest
 import unittest
 import threading
 from src.server.object_server import (
@@ -17,6 +18,7 @@ class TestDispatcherServerCreate(unittest.TestCase):
     def setUp(self):
         _reset_server()
 
+    @pytest.mark.test_id("TI-OS-01")
     def test_create_list_registers_instance(self):
         """CREATE LIST vía Dispatcher registra una instancia List en el servidor."""
         response = dispatch(make_create("LIST"))
@@ -26,6 +28,7 @@ class TestDispatcherServerCreate(unittest.TestCase):
         self.assertEqual(code, SERVER_OK)
         self.assertIsInstance(obj, List)
 
+    @pytest.mark.test_id("TI-OS-02")
     def test_create_stack_registers_instance(self):
         """CREATE STACK vía Dispatcher registra una instancia Stack en el servidor."""
         response = dispatch(make_create("STACK"))
@@ -34,6 +37,7 @@ class TestDispatcherServerCreate(unittest.TestCase):
         self.assertEqual(code, SERVER_OK)
         self.assertIsInstance(obj, Stack)
 
+    @pytest.mark.test_id("TI-OS-03")
     def test_create_tree_registers_instance(self):
         """CREATE TREE vía Dispatcher registra una instancia Tree en el servidor."""
         response = dispatch(make_create("TREE"))
@@ -42,6 +46,7 @@ class TestDispatcherServerCreate(unittest.TestCase):
         self.assertEqual(code, SERVER_OK)
         self.assertIsInstance(obj, Tree)
 
+    @pytest.mark.test_id("TI-OS-04")
     def test_multiple_creates_have_unique_ids(self):
         """Múltiples CREATE seguidos producen IDs únicos en el servidor."""
         ids = set()
@@ -51,6 +56,7 @@ class TestDispatcherServerCreate(unittest.TestCase):
             ids.add(int(resp.split("|")[1].strip()))
         self.assertEqual(len(ids), 5, "Se detectaron IDs duplicados en creaciones secuenciales")
 
+    @pytest.mark.test_id("TI-OS-05")
     def test_create_increments_server_count(self):
         """El conteo de instancias en el servidor sube con cada CREATE."""
         dispatch(make_create("LIST"))
@@ -58,6 +64,7 @@ class TestDispatcherServerCreate(unittest.TestCase):
         dispatch(make_create("TREE"))
         self.assertEqual(server_instance_count(), 3)
 
+    @pytest.mark.test_id("TI-OS-06")
     def test_create_invalid_type_does_not_register(self):
         """CREATE con tipo inválido no altera el conteo del servidor."""
         dispatch(make_create("QUEUE"))
@@ -70,6 +77,7 @@ class TestDispatcherServerGet(unittest.TestCase):
     def setUp(self):
         _reset_server()
 
+    @pytest.mark.test_id("TI-OS-07")
     def test_get_after_create_via_dispatcher(self):
         """ID retornado por CREATE permite recuperar la instancia desde server_get."""
         resp = dispatch(make_create("LIST"))
@@ -78,12 +86,14 @@ class TestDispatcherServerGet(unittest.TestCase):
         self.assertEqual(code, SERVER_OK)
         self.assertIsNotNone(obj)
 
+    @pytest.mark.test_id("TI-OS-08")
     def test_get_nonexistent_id_returns_not_found(self):
         """ID que nunca fue creado retorna SERVER_NOT_FOUND."""
         code, obj = server_get(99999)
         self.assertEqual(code, SERVER_NOT_FOUND)
         self.assertIsNone(obj)
 
+    @pytest.mark.test_id("TI-OS-09")
     def test_get_after_destroy_returns_not_found(self):
         """Después de DESTROY, server_get devuelve NOT_FOUND para el mismo ID."""
         from tests.integration.stubs.serializer_stub import make_destroy
@@ -93,6 +103,7 @@ class TestDispatcherServerGet(unittest.TestCase):
         code, _ = server_get(instance_id)
         self.assertEqual(code, SERVER_NOT_FOUND)
 
+    @pytest.mark.test_id("TI-OS-10")
     def test_same_id_returns_same_object_reference(self):
         """server_get retorna siempre la misma referencia de objeto para un ID dado."""
         resp = dispatch(make_create("TREE"))
@@ -108,6 +119,7 @@ class TestDispatcherServerConcurrentCreate(unittest.TestCase):
     def setUp(self):
         _reset_server()
 
+    @pytest.mark.test_id("TC-01")
     def test_ten_threads_create_unique_ids(self):
         """10 hilos llaman a CREATE vía Dispatcher simultáneamente; todos los IDs son únicos."""
         ids: list = []
@@ -132,6 +144,7 @@ class TestDispatcherServerConcurrentCreate(unittest.TestCase):
         self.assertEqual(len(ids), 10)
         self.assertEqual(len(set(ids)), 10, "Se detectaron IDs duplicados en creación concurrente")
 
+    @pytest.mark.test_id("TI-OS-11")
     def test_twenty_threads_mixed_types_unique_ids(self):
         """20 hilos crean tipos mixtos; todos los IDs deben ser únicos."""
         types = ["LIST", "STACK", "TREE"] * 6 + ["LIST", "STACK"]
@@ -153,6 +166,7 @@ class TestDispatcherServerConcurrentCreate(unittest.TestCase):
         self.assertEqual(len(ids), 20)
         self.assertEqual(len(set(ids)), 20, "IDs duplicados en creación mixta concurrente")
 
+    @pytest.mark.test_id("TI-OS-12")
     def test_concurrent_creates_all_retrievable_from_server(self):
         """Todas las instancias creadas concurrentemente son recuperables por ID."""
         ids: list = []

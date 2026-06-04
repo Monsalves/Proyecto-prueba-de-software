@@ -1,3 +1,4 @@
+import pytest
 """
 test_bus_system.py — Pruebas Funcionales End-to-End del Bus de Objetos
 Proyecto: Bus de Objetos en Python — Etapa 4
@@ -64,6 +65,7 @@ class TestFlowList(unittest.TestCase):
     def tearDown(self):
         self.client.close()
 
+    @pytest.mark.test_id("TS-BS-01")
     def test_list_full_flow(self):
         # CREATE
         list_id = self.client.list_create()
@@ -93,6 +95,7 @@ class TestFlowList(unittest.TestCase):
         remaining = [self.client.list_get(list_id, i) for i in range(3)]
         self.assertEqual(remaining, [30, 40, 50])
 
+    @pytest.mark.test_id("TS-BS-02")
     def test_list_contains(self):
         list_id = self.client.list_create()
         self.client.list_insert(list_id, 42)
@@ -120,6 +123,7 @@ class TestFlowStack(unittest.TestCase):
     def tearDown(self):
         self.client.close()
 
+    @pytest.mark.test_id("TS-BS-03")
     def test_stack_lifo_order(self):
         stack_id = self.client.stack_create()
         self.assertGreater(stack_id, 0)
@@ -134,6 +138,7 @@ class TestFlowStack(unittest.TestCase):
         self.assertEqual(self.client.stack_pop(stack_id), 20)
         self.assertEqual(self.client.stack_pop(stack_id), 10)
 
+    @pytest.mark.test_id("TS-BS-04")
     def test_stack_peek_and_is_empty(self):
         stack_id = self.client.stack_create()
 
@@ -168,6 +173,7 @@ class TestFlowTree(unittest.TestCase):
     def tearDown(self):
         self.client.close()
 
+    @pytest.mark.test_id("TS-BS-05")
     def test_tree_bst_flow(self):
         tree_id = self.client.tree_create()
         self.assertGreater(tree_id, 0)
@@ -184,6 +190,7 @@ class TestFlowTree(unittest.TestCase):
         inorder = self.client.tree_inorder(tree_id)
         self.assertEqual(inorder, [1, 3, 4, 5, 8])
 
+    @pytest.mark.test_id("TS-BS-06")
     def test_tree_delete(self):
         tree_id = self.client.tree_create()
         for v in [5, 3, 8]:
@@ -215,6 +222,7 @@ class TestFlowMultiInstance(unittest.TestCase):
     def tearDown(self):
         self.client.close()
 
+    @pytest.mark.test_id("TS-BS-07")
     def test_multi_instance_isolation(self):
         # Crear instancias
         list1 = self.client.list_create()
@@ -250,6 +258,7 @@ class TestFlowMultiInstance(unittest.TestCase):
         self.assertEqual(self.client.stack_pop(stack1), 200)
         self.assertEqual(self.client.stack_pop(stack1), 100)
 
+    @pytest.mark.test_id("TS-BS-08")
     def test_multi_client_concurrent(self):
         """Verificar que dos clientes pueden operar simultáneamente."""
         client2 = _make_client()

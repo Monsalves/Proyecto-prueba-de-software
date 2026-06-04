@@ -1,3 +1,4 @@
+import pytest
 import unittest
 from src.server.object_server import _reset_server
 from src.server.dispatcher import dispatch
@@ -41,6 +42,7 @@ class TestDispatcherSocketCreate(unittest.TestCase):
     def setUp(self):
         _reset_server()
 
+    @pytest.mark.test_id("TI-SO-01")
     def test_create_list_via_socket_returns_ok(self):
         """Trama CREATE|LIST pasa por el socket y retorna OK con el ID."""
         stub = _socket_for("LIST", "CREATE", 0, "")
@@ -49,11 +51,13 @@ class TestDispatcherSocketCreate(unittest.TestCase):
         # El servidor escribió la respuesta en el buffer de envío
         self.assertEqual(stub.get_sent_data(), response)
 
+    @pytest.mark.test_id("TI-SO-02")
     def test_create_stack_via_socket_returns_ok(self):
         stub = _socket_for("STACK", "CREATE", 0, "")
         response = _handle_raw(stub)
         self.assertTrue(response.startswith("OK|"), msg=response)
 
+    @pytest.mark.test_id("TI-SO-03")
     def test_create_tree_via_socket_returns_ok(self):
         stub = _socket_for("TREE", "CREATE", 0, "")
         response = _handle_raw(stub)
@@ -81,30 +85,35 @@ class TestDispatcherSocketOperations(unittest.TestCase):
         )[1])
         self.tree_id = int(resp.split("|")[1].strip())
 
+    @pytest.mark.test_id("TI-SO-04")
     def test_list_insert_via_socket(self):
         """INSERT en List retorna OK desde el flujo de socket."""
         stub = _socket_for("LIST", "INSERT", self.list_id, "99")
         response = _handle_raw(stub)
         self.assertTrue(response.startswith("OK|"), msg=response)
 
+    @pytest.mark.test_id("TI-SO-05")
     def test_stack_push_via_socket(self):
         """PUSH en Stack retorna OK desde el flujo de socket."""
         stub = _socket_for("STACK", "PUSH", self.stack_id, "42")
         response = _handle_raw(stub)
         self.assertTrue(response.startswith("OK|"), msg=response)
 
+    @pytest.mark.test_id("TI-SO-06")
     def test_tree_insert_via_socket(self):
         """INSERT en Tree retorna OK desde el flujo de socket."""
         stub = _socket_for("TREE", "INSERT", self.tree_id, "50")
         response = _handle_raw(stub)
         self.assertTrue(response.startswith("OK|"), msg=response)
 
+    @pytest.mark.test_id("TI-SO-07")
     def test_get_sent_data_matches_response(self):
         """Verifica que el buffer de envío del SocketStub contiene la respuesta exacta."""
         stub = _socket_for("LIST", "SIZE", self.list_id, "")
         response = _handle_raw(stub)
         self.assertEqual(stub.get_sent_data(), response)
 
+    @pytest.mark.test_id("TI-SO-08")
     def test_missing_instance_id_via_socket(self):
         """ID inexistente en trama cruda retorna ERROR|INSTANCE_NOT_FOUND."""
         stub = _socket_for("STACK", "PUSH", 9999, "1")
@@ -119,6 +128,7 @@ class TestDispatcherSocketMalformed(unittest.TestCase):
     def setUp(self):
         _reset_server()
 
+    @pytest.mark.test_id("TI-SO-09")
     def test_malformed_no_newline(self):
         """Trama sin \\n produce ERROR|MALFORMED_MESSAGE."""
         stub = SocketStub(initial_data="LIST|INSERT|1|42")  # Sin \n
@@ -126,6 +136,7 @@ class TestDispatcherSocketMalformed(unittest.TestCase):
         self.assertTrue(response.startswith("ERROR|"))
         self.assertIn("MALFORMED", response)
 
+    @pytest.mark.test_id("TI-SO-10")
     def test_malformed_bad_object_type(self):
         """Tipo de objeto inválido produce ERROR|MALFORMED_MESSAGE."""
         stub = SocketStub(initial_data="QUEUE|INSERT|1|42\n")
@@ -133,17 +144,20 @@ class TestDispatcherSocketMalformed(unittest.TestCase):
         self.assertTrue(response.startswith("ERROR|"))
         self.assertIn("MALFORMED", response)
 
+    @pytest.mark.test_id("TI-SO-11")
     def test_malformed_bad_operation(self):
         """Operación desconocida produce ERROR|MALFORMED_MESSAGE."""
         stub = SocketStub(initial_data="LIST|VOLAR|1|42\n")
         response = _handle_raw(stub)
         self.assertTrue(response.startswith("ERROR|"))
 
+    @pytest.mark.test_id("TI-SO-12")
     def test_socket_send_buffer_is_empty_before_call(self):
         """El buffer de envío del stub está vacío antes de cualquier send()."""
         stub = SocketStub(initial_data="LIST|SIZE|1|\n")
         self.assertEqual(stub.get_sent_data(), "")
 
+    @pytest.mark.test_id("TI-SO-13")
     def test_socket_closed_raises_on_send(self):
         """Un socket cerrado lanza OSError al intentar enviar."""
         stub = SocketStub()
@@ -165,6 +179,7 @@ class TestDispatcherSocketFullWorkflow(unittest.TestCase):
         self.assertTrue(response.startswith("OK|"), msg=response)
         return int(response.split("|")[1].strip())
 
+    @pytest.mark.test_id("TI-SO-14")
     def test_full_workflow_list_via_socket(self):
         # CREATE
         list_id = self._create_via_socket("LIST")
@@ -181,6 +196,7 @@ class TestDispatcherSocketFullWorkflow(unittest.TestCase):
         resp_destroy = dispatch(make_destroy(list_id, "LIST"))
         self.assertEqual(resp_destroy.strip(), "OK|DESTROYED")
 
+    @pytest.mark.test_id("TI-SO-15")
     def test_full_workflow_tree_via_socket(self):
         # CREATE
         tree_id = self._create_via_socket("TREE")

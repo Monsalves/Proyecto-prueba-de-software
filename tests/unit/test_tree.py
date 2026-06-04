@@ -1,3 +1,4 @@
+import pytest
 """
 test_tree.py — Pruebas Unitarias para tree_obj.py
 Proyecto: Bus de Objetos en Python — Etapa 3 / TSK-05
@@ -19,26 +20,31 @@ from src.objects.tree_obj import (
 class TestTreeCreate(unittest.TestCase):
     """Pruebas de creación y destrucción."""
 
+    @pytest.mark.test_id("TU-T-01")
     def test_create_returns_tree_instance(self):
         t = tree_create()
         self.assertIsInstance(t, Tree)
 
+    @pytest.mark.test_id("TU-T-02")
     def test_new_tree_size_is_zero(self):
         t = tree_create()
         self.assertEqual(tree_size(t), 0)
 
+    @pytest.mark.test_id("TU-T-03")
     def test_destroy_ok(self):
         t = tree_create()
         tree_insert(t, 10)
         result = tree_destroy(t)
         self.assertEqual(result, TREE_OK)
 
+    @pytest.mark.test_id("TU-T-04")
     def test_destroy_clears_size(self):
         t = tree_create()
         tree_insert(t, 5)
         tree_destroy(t)
         self.assertEqual(tree_size(t), 0)
 
+    @pytest.mark.test_id("TU-T-05")
     def test_destroy_none_returns_null_ptr(self):
         result = tree_destroy(None)
         self.assertEqual(result, TREE_NULL_PTR)
@@ -50,33 +56,40 @@ class TestTreeInsert(unittest.TestCase):
     def setUp(self):
         self.t = tree_create()
 
+    @pytest.mark.test_id("TU-T-06")
     def test_insert_single_element(self):
         result = tree_insert(self.t, 10)
         self.assertEqual(result, TREE_OK)
 
+    @pytest.mark.test_id("TU-T-07")
     def test_insert_increments_size(self):
         tree_insert(self.t, 5)
         self.assertEqual(tree_size(self.t), 1)
 
+    @pytest.mark.test_id("TU-T-08")
     def test_insert_multiple_elements(self):
         for v in [10, 5, 15, 3, 7]:
             tree_insert(self.t, v)
         self.assertEqual(tree_size(self.t), 5)
 
+    @pytest.mark.test_id("TU-T-09")
     def test_insert_duplicate_does_not_increase_size(self):
         tree_insert(self.t, 10)
         tree_insert(self.t, 10)
         self.assertEqual(tree_size(self.t), 1)
 
+    @pytest.mark.test_id("TU-T-10")
     def test_insert_none_tree_returns_null_ptr(self):
         result = tree_insert(None, 10)
         self.assertEqual(result, TREE_NULL_PTR)
 
+    @pytest.mark.test_id("TU-T-11")
     def test_insert_negative_value(self):
         result = tree_insert(self.t, -5)
         self.assertEqual(result, TREE_OK)
         self.assertEqual(tree_size(self.t), 1)
 
+    @pytest.mark.test_id("TU-T-12")
     def test_insert_zero(self):
         result = tree_insert(self.t, 0)
         self.assertEqual(result, TREE_OK)
@@ -90,25 +103,32 @@ class TestTreeSearch(unittest.TestCase):
         for v in [10, 5, 15, 3, 7, 12, 20]:
             tree_insert(self.t, v)
 
+    @pytest.mark.test_id("TU-T-13")
     def test_search_existing_root(self):
         self.assertEqual(tree_search(self.t, 10), TREE_OK)
 
+    @pytest.mark.test_id("TU-T-14")
     def test_search_existing_left_leaf(self):
         self.assertEqual(tree_search(self.t, 3), TREE_OK)
 
+    @pytest.mark.test_id("TU-T-15")
     def test_search_existing_right_subtree(self):
         self.assertEqual(tree_search(self.t, 20), TREE_OK)
 
+    @pytest.mark.test_id("TU-T-16")
     def test_search_nonexistent_value(self):
         self.assertEqual(tree_search(self.t, 99), TREE_NOT_FOUND)
 
+    @pytest.mark.test_id("TU-T-17")
     def test_search_empty_tree(self):
         empty = tree_create()
         self.assertEqual(tree_search(empty, 5), TREE_NOT_FOUND)
 
+    @pytest.mark.test_id("TU-T-18")
     def test_search_none_tree(self):
         self.assertEqual(tree_search(None, 5), TREE_NULL_PTR)
 
+    @pytest.mark.test_id("TU-T-19")
     def test_search_after_delete(self):
         tree_delete(self.t, 7)
         self.assertEqual(tree_search(self.t, 7), TREE_NOT_FOUND)
@@ -122,24 +142,30 @@ class TestTreeDeleteNoChildren(unittest.TestCase):
         for v in [10, 5, 15]:
             tree_insert(self.t, v)
 
+    @pytest.mark.test_id("TU-T-20")
     def test_delete_leaf_ok(self):
         self.assertEqual(tree_delete(self.t, 5), TREE_OK)
 
+    @pytest.mark.test_id("TU-T-21")
     def test_delete_leaf_reduces_size(self):
         tree_delete(self.t, 15)
         self.assertEqual(tree_size(self.t), 2)
 
+    @pytest.mark.test_id("TU-T-22")
     def test_delete_leaf_no_longer_found(self):
         tree_delete(self.t, 5)
         self.assertEqual(tree_search(self.t, 5), TREE_NOT_FOUND)
 
+    @pytest.mark.test_id("TU-T-23")
     def test_delete_nonexistent_returns_not_found(self):
         self.assertEqual(tree_delete(self.t, 99), TREE_NOT_FOUND)
 
+    @pytest.mark.test_id("TU-T-24")
     def test_delete_from_empty_tree(self):
         empty = tree_create()
         self.assertEqual(tree_delete(empty, 10), TREE_NOT_FOUND)
 
+    @pytest.mark.test_id("TU-T-25")
     def test_delete_none_tree(self):
         self.assertEqual(tree_delete(None, 10), TREE_NULL_PTR)
 
@@ -153,22 +179,27 @@ class TestTreeDeleteOneChild(unittest.TestCase):
         for v in [10, 5, 3]:
             tree_insert(self.t, v)
 
+    @pytest.mark.test_id("TU-T-26")
     def test_delete_node_with_left_child(self):
         result = tree_delete(self.t, 5)
         self.assertEqual(result, TREE_OK)
 
+    @pytest.mark.test_id("TU-T-27")
     def test_child_still_accessible_after_parent_deletion(self):
         tree_delete(self.t, 5)
         self.assertEqual(tree_search(self.t, 3), TREE_OK)
 
+    @pytest.mark.test_id("TU-T-28")
     def test_size_decreases_by_one(self):
         tree_delete(self.t, 5)
         self.assertEqual(tree_size(self.t), 2)
 
+    @pytest.mark.test_id("TU-T-29")
     def test_deleted_node_not_found(self):
         tree_delete(self.t, 5)
         self.assertEqual(tree_search(self.t, 5), TREE_NOT_FOUND)
 
+    @pytest.mark.test_id("TU-T-30")
     def test_inorder_correct_after_deletion(self):
         tree_delete(self.t, 5)
         _, result = tree_inorder(self.t)
@@ -183,23 +214,28 @@ class TestTreeDeleteTwoChildren(unittest.TestCase):
         for v in [10, 5, 15, 3, 7, 12, 20]:
             tree_insert(self.t, v)
 
+    @pytest.mark.test_id("TU-T-31")
     def test_delete_root_with_two_children(self):
         result = tree_delete(self.t, 10)
         self.assertEqual(result, TREE_OK)
 
+    @pytest.mark.test_id("TU-T-32")
     def test_inorder_still_sorted_after_root_deletion(self):
         tree_delete(self.t, 10)
         _, result = tree_inorder(self.t)
         self.assertEqual(result, sorted(result))
 
+    @pytest.mark.test_id("TU-T-33")
     def test_deleted_root_not_found(self):
         tree_delete(self.t, 10)
         self.assertEqual(tree_search(self.t, 10), TREE_NOT_FOUND)
 
+    @pytest.mark.test_id("TU-T-34")
     def test_size_correct_after_internal_node_deletion(self):
         tree_delete(self.t, 5)
         self.assertEqual(tree_size(self.t), 6)
 
+    @pytest.mark.test_id("TU-T-35")
     def test_internal_subtree_intact_after_deletion(self):
         tree_delete(self.t, 15)
         self.assertEqual(tree_search(self.t, 12), TREE_OK)
@@ -212,28 +248,33 @@ class TestTreeInorder(unittest.TestCase):
     def setUp(self):
         self.t = tree_create()
 
+    @pytest.mark.test_id("TU-T-36")
     def test_inorder_empty_tree(self):
         code, result = tree_inorder(self.t)
         self.assertEqual(code, TREE_EMPTY)
         self.assertEqual(result, [])
 
+    @pytest.mark.test_id("TU-T-37")
     def test_inorder_none_tree(self):
         code, result = tree_inorder(None)
         self.assertEqual(code, TREE_NULL_PTR)
         self.assertEqual(result, [])
 
+    @pytest.mark.test_id("TU-T-38")
     def test_inorder_single_element(self):
         tree_insert(self.t, 42)
         code, result = tree_inorder(self.t)
         self.assertEqual(code, TREE_OK)
         self.assertEqual(result, [42])
 
+    @pytest.mark.test_id("TU-T-39")
     def test_inorder_sorted_output(self):
         for v in [10, 5, 15, 3, 7, 12, 20]:
             tree_insert(self.t, v)
         _, result = tree_inorder(self.t)
         self.assertEqual(result, [3, 5, 7, 10, 12, 15, 20])
 
+    @pytest.mark.test_id("TU-T-40")
     def test_inorder_after_deletion(self):
         for v in [10, 5, 15]:
             tree_insert(self.t, v)
@@ -241,6 +282,7 @@ class TestTreeInorder(unittest.TestCase):
         _, result = tree_inorder(self.t)
         self.assertEqual(result, [10, 15])
 
+    @pytest.mark.test_id("TU-T-41")
     def test_inorder_with_negatives(self):
         for v in [-5, 0, 5]:
             tree_insert(self.t, v)
@@ -251,16 +293,19 @@ class TestTreeInorder(unittest.TestCase):
 class TestTreeSize(unittest.TestCase):
     """Pruebas de tamaño."""
 
+    @pytest.mark.test_id("TU-T-42")
     def test_size_empty(self):
         t = tree_create()
         self.assertEqual(tree_size(t), 0)
 
+    @pytest.mark.test_id("TU-T-43")
     def test_size_after_inserts(self):
         t = tree_create()
         for v in [1, 2, 3, 4, 5]:
             tree_insert(t, v)
         self.assertEqual(tree_size(t), 5)
 
+    @pytest.mark.test_id("TU-T-44")
     def test_size_after_delete(self):
         t = tree_create()
         tree_insert(t, 10)
@@ -268,9 +313,11 @@ class TestTreeSize(unittest.TestCase):
         tree_delete(t, 10)
         self.assertEqual(tree_size(t), 1)
 
+    @pytest.mark.test_id("TU-T-45")
     def test_size_none_tree(self):
         self.assertEqual(tree_size(None), TREE_NULL_PTR)
 
+    @pytest.mark.test_id("TU-T-46")
     def test_size_after_destroy(self):
         t = tree_create()
         tree_insert(t, 7)

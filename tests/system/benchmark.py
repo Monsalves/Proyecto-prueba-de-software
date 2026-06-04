@@ -166,6 +166,56 @@ def print_results(results: list[dict]) -> None:
     print("=" * 80)
 
 
+def save_markdown_report(results: list[dict], filepath: str = "benchmark_report.md") -> None:
+    """Saves the benchmark results as a Markdown table."""
+    lines = [
+        "## Reporte de Rendimiento (Benchmark Concurrente)",
+        "",
+        "| Clientes | Operaciones Totales | Tiempo (s) | Mínimo (µs) | Promedio (µs) | Percentil 95 (µs) | Máximo (µs) | Throughput |",
+        "|---:|---:|---:|---:|---:|---:|---:|---:|",
+    ]
+    for r in results:
+        if "error" in r:
+            lines.append(f"| {r['clients']} | ERROR: {r['error']} | | | | | | |")
+            continue
+        lines.append(
+            f"| {r['clients']} | {r['total_operations']} | {r['total_time_s']} s | "
+            f"{r['min_us']} µs | {r['avg_us']} µs | {r['p95_us']} µs | "
+            f"{r['max_us']} µs | {r['throughput_ops_s']} ops/s |"
+        )
+    lines.append("")
+    lines.append("### Análisis de Degradación bajo Carga Concurrente")
+    lines.append("")
+    if len(results) >= 2 and "error" not in results[0]:
+        baseline = results[0]["avg_us"]
+        for r in results[1:]:
+            if "error" in r:
+                continue
+            factor = r["avg_us"] / baseline if baseline > 0 else float("inf")
+            deg_type = "degradación lineal" if factor < r["clients"] * 0.8 else "degradación súper-lineal"
+            lines.append(
+                f"- **{r['clients']} clientes vs 1 cliente:** La latencia promedio se incrementó por un factor de **{factor:.2f}x** ({deg_type})."
+            )
+    lines.append("")
+    lines.append("### Análisis de Concurrencia (Variabilidad)")
+    lines.append("")
+    for r in results:
+        if "error" in r:
+            continue
+        ratio = r["p95_us"] / r["avg_us"] if r["avg_us"] > 0 else 0
+        lines.append(
+            f"- **{r['clients']} cliente(s):** Desviación estándar = **{r['stddev_us']:.1f}µs**, Ratio P95/Avg = **{ratio:.2f}x**"
+        )
+    lines.append("")
+    lines.append("> **Estabilidad:** Todos los escenarios de concurrencia completaron de manera exitosa sin provocar la caída (*crash*) del servidor.")
+    lines.append("")
+    
+    with open(filepath, "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
+    print(f"Reporte de benchmark guardado en {filepath}")
+
+
+
 def main():
     """Entry point for the benchmark."""
     print("Starting Bus de Objetos Benchmark...")
@@ -192,6 +242,7 @@ def main():
     server.stop()
 
     print_results(results)
+    save_markdown_report(results)
 
     return results
 

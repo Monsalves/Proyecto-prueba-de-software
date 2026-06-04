@@ -102,6 +102,14 @@ if __name__ == "__main__":
     print("Generando Markdown...")
     markdown = generate_markdown("report.json")
     
+    # Intentar leer y anexar el reporte del benchmark si existe
+    benchmark_file = "benchmark_report.md"
+    if os.path.exists(benchmark_file):
+        print(f"Anexando reporte de rendimiento desde {benchmark_file}...")
+        with open(benchmark_file, "r", encoding="utf-8") as f:
+            bench_content = f.read()
+        markdown += "\n\n---\n\n" + bench_content
+        
     # En entorno local sin GITHUB_TOKEN esto fallará, 
     # pero está pensado para correr en GitHub Actions.
     if os.environ.get('GITHUB_ACTIONS') == 'true':

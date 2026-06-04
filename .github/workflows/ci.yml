@@ -1,4 +1,4 @@
-name: Bus de Objetos CI (Etapa 2)
+name: Bus de Objetos CI (Etapa 4)
 
 on: [push, pull_request]
 
@@ -27,6 +27,10 @@ jobs:
     - name: Ejecutar Todas las Pruebas y Generar Reporte
       run: |
         PYTHONPATH=. pytest tests/ --html=reporte_tests.html --self-contained-html --json-report --json-report-file=report.json
+
+    - name: Ejecutar Benchmark de Rendimiento
+      run: |
+        PYTHONPATH=. python tests/system/benchmark.py
 
     - name: Subir Reporte HTML
       uses: actions/upload-artifact@v4

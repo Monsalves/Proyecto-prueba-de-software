@@ -1,5 +1,25 @@
 # Bus de Objetos en Python
 
+## 🚀 Cómo Ejecutar el Proyecto
+
+Para ejecutar el proyecto localmente, necesitas abrir **dos terminales** diferentes en la raíz del proyecto.
+
+### 1. Iniciar el Servidor (Terminal 1)
+En la primera terminal, inicia el servidor del bus de objetos:
+```bash
+python -m src.server.bus_server
+```
+*(Dependiendo de tu sistema, puede que necesites usar `python3`)*
+
+### 2. Iniciar el Cliente de Pruebas (Terminal 2)
+En la segunda terminal, ejecuta el cliente de pruebas para conectarte al servidor e interactuar con el bus:
+```bash
+python -m src.client.test_client
+```
+*(Dependiendo de tu sistema, puede que necesites usar `python3`)*
+
+---
+
 ## Estructura del Proyecto
 
 La estructura del código está dividida lógicamente en código fuente, pruebas automatizadas y scripts de utilería, siguiendo el principio de responsabilidad única.

@@ -3,28 +3,24 @@ import os
 import subprocess
 import sys
 
-def extract_test_ids(tests_dir="tests"):
+def extract_test_ids(log_path="tests/test_ids.log"):
     """
-    Escanea la carpeta de pruebas y retorna un diccionario
-    mapeando el nombre de la prueba con su ID extraído de los comentarios.
+    Lee el archivo de log/mapeo de pruebas y retorna un diccionario
+    mapeando el nombre de la prueba con su ID.
     """
     mapping = {}
-    for root, _, files in os.walk(tests_dir):
-        for file in files:
-            if file.endswith('.py'):
-                file_path = os.path.join(root, file)
-                last_id = None
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    for line in f:
-                        stripped = line.strip()
-                        if stripped.startswith('# ID:'):
-                            last_id = stripped.replace('# ID:', '').strip()
-                        elif stripped.startswith('def test_'):
-                            # test_name(self) -> test_name
-                            test_name = stripped.split('def ')[1].split('(')[0]
-                            if last_id:
-                                mapping[test_name] = last_id
-                                last_id = None
+    if not os.path.exists(log_path):
+        print(f"Advertencia: No se encontró el archivo de mapeo {log_path}")
+        return mapping
+        
+    with open(log_path, 'r', encoding='utf-8') as f:
+        for line in f:
+            stripped = line.strip()
+            if not stripped or stripped.startswith('#'):
+                continue
+            if ':' in stripped:
+                test_name, test_id = stripped.split(':', 1)
+                mapping[test_name.strip()] = test_id.strip()
     return mapping
 
 def generate_markdown(report_file, mapping):
@@ -122,9 +118,9 @@ def publish_issue(markdown_body):
         sys.exit(1)
 
 if __name__ == "__main__":
-    print("Escaneando IDs de pruebas en tests/...")
+    print("Cargando IDs de pruebas desde tests/test_ids.log...")
     mapping = extract_test_ids()
-    print(f"Se encontraron {len(mapping)} pruebas con IDs comentados.")
+    print(f"Se encontraron {len(mapping)} pruebas mapeadas con IDs.")
     
     print("Generando Markdown...")
     markdown = generate_markdown("report.json", mapping)

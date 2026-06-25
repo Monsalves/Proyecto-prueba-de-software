@@ -87,7 +87,7 @@ def deserialize_message(raw: str | None) -> tuple[int, BusMessage | None]:
 
     # Validación 4: exactamente 4 campos (3 separadores '|')
     # Usamos split con maxsplit=3 para tolerar '|' dentro del dato
-    parts = body.split("|", 3)
+    parts = body.split(":", 3)
     if len(parts) != 4:
         return (DESER_ERROR, None)
 

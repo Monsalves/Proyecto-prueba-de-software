@@ -3,6 +3,9 @@ import os
 import subprocess
 import sys
 
+def _report_label(report_file):
+    return "Regresion" if os.path.basename(report_file) == "report_regresion.json" else "Pruebas"
+
 def generate_markdown(report_file):
     """
     Lee el JSON de pytest y genera el Markdown con los resultados.
@@ -27,8 +30,10 @@ def generate_markdown(report_file):
     except Exception:
         pass
         
+    report_label = _report_label(report_file)
+
     lines = [
-        f"## Reporte de Pruebas Automáticas",
+        f"## Reporte de {report_label} Automatica",
         f"**Commit:** `{short_sha}` - {commit_msg}",
         "",
         "| ID | Función de Prueba | Estado |",
@@ -76,8 +81,10 @@ def publish_issue(markdown_body):
     """
     commit_sha = os.environ.get('GITHUB_SHA', 'local-run')
     short_sha = commit_sha[:7] if commit_sha != 'local-run' else 'Local'
-    
-    title = f"Resultados de Pruebas: Commit {short_sha}"
+
+    report_file = os.environ.get("REPORT_FILE", "report.json")
+    report_label = _report_label(report_file)
+    title = f"Resultados de {report_label}: Commit {short_sha}"
     
     body_file = "issue_body.md"
     with open(body_file, "w", encoding="utf-8") as f:
@@ -99,12 +106,13 @@ def publish_issue(markdown_body):
         sys.exit(1)
 
 if __name__ == "__main__":
+    report_file = os.environ.get("REPORT_FILE", "report.json")
     print("Generando Markdown...")
-    markdown = generate_markdown("report.json")
+    markdown = generate_markdown(report_file)
     
     # Intentar leer y anexar el reporte del benchmark si existe
     benchmark_file = "benchmark_report.md"
-    if os.path.exists(benchmark_file):
+    if os.path.exists(benchmark_file) and os.path.basename(report_file) == "report.json":
         print(f"Anexando reporte de rendimiento desde {benchmark_file}...")
         with open(benchmark_file, "r", encoding="utf-8") as f:
             bench_content = f.read()

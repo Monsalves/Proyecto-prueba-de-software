@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: read
+  issues: write
 
 jobs:
   regression:
@@ -43,3 +44,11 @@ jobs:
           report_regresion.json
           coverage_regresion.xml
           coverage_regresion_html
+
+    - name: Publicar Resultados de Regresion en GitHub Issues
+      if: always()
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        REPORT_FILE: report_regresion.json
+      run: |
+        python scripts/publish_test_results.py

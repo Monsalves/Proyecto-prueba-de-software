@@ -90,6 +90,7 @@ class TestSerlializerDispatcherList(unittest.TestCase):
         self.assertEqual(code, DESER_ERROR)
         self.assertIsNone(msg)
 
+    @pytest.mark.regression
     @pytest.mark.test_id("TI-SD-08")
     def test_malformed_invalid_operation(self):
         """Trama con operación desconocida es rechazada por el deserializador."""

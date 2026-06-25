@@ -14,6 +14,7 @@ from objects.list_obj import (
 )
 
 class TestListCreate(unittest.TestCase):
+    @pytest.mark.regression
     @pytest.mark.test_id("TU-L-01")
     def test_list_create_returns_instance(self):
         """[Clase Válida] Verifica que retorne una instancia de List."""
@@ -87,6 +88,7 @@ class TestListDestroy(unittest.TestCase):
         self.assertEqual(ret, LIST_OK)
 
 class TestListInsert(unittest.TestCase):
+    @pytest.mark.regression
     @pytest.mark.test_id("TU-L-11")
     def test_list_insert_valid(self):
         """[Clase Válida] Inserción simple de un elemento."""
@@ -133,6 +135,7 @@ class TestListRemove(unittest.TestCase):
         list_insert(self.lst, 20)
         list_insert(self.lst, 30)
 
+    @pytest.mark.regression
     @pytest.mark.test_id("TU-L-16")
     def test_list_remove_middle(self):
         """[Clase Válida] Remover el elemento central."""
@@ -214,6 +217,7 @@ class TestListGet(unittest.TestCase):
         list_insert(self.lst, 100)
         list_insert(self.lst, 200)
 
+    @pytest.mark.regression
     @pytest.mark.test_id("TU-L-26")
     def test_list_get_valid(self):
         """[Clase Válida] Obtener un valor existente."""
@@ -233,6 +237,7 @@ class TestListGet(unittest.TestCase):
         code, val = list_get(self.lst, -5)
         self.assertEqual(code, LIST_OUT_OF_BOUNDS)
 
+    @pytest.mark.regression
     @pytest.mark.test_id("TU-L-29")
     def test_list_get_out_of_bounds(self):
         """[Límite Superior] Obtener con índice fuera de rango."""

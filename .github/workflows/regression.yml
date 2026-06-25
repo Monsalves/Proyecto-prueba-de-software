@@ -1,0 +1,45 @@
+name: Bus de Objetos Regresion (Etapa 5)
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out repository code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Instalar dependencias
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest pytest-json-report pytest-cov
+
+    - name: Ejecutar Regresion Minima Etapa 5
+      run: |
+        PYTHONPATH=. pytest -m regression --tb=short --json-report --json-report-file=report_regresion.json
+
+    - name: Generar Cobertura de Regresion
+      run: |
+        PYTHONPATH=. pytest -m regression --cov=src --cov-report=term-missing --cov-report=html:coverage_regresion_html --cov-report=xml:coverage_regresion.xml
+
+    - name: Subir Reporte de Regresion
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: reporte-regresion-etapa-5
+        path: |
+          report_regresion.json
+          coverage_regresion.xml
+          coverage_regresion_html

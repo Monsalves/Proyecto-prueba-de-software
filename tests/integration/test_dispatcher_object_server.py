@@ -18,6 +18,7 @@ class TestDispatcherServerCreate(unittest.TestCase):
     def setUp(self):
         _reset_server()
 
+    @pytest.mark.regression
     @pytest.mark.test_id("TI-OS-01")
     def test_create_list_registers_instance(self):
         """CREATE LIST vía Dispatcher registra una instancia List en el servidor."""
@@ -86,6 +87,7 @@ class TestDispatcherServerGet(unittest.TestCase):
         self.assertEqual(code, SERVER_OK)
         self.assertIsNotNone(obj)
 
+    @pytest.mark.regression
     @pytest.mark.test_id("TI-OS-08")
     def test_get_nonexistent_id_returns_not_found(self):
         """ID que nunca fue creado retorna SERVER_NOT_FOUND."""

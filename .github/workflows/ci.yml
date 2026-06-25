@@ -1,6 +1,10 @@
-name: Bus de Objetos CI (Etapa 4)
+name: Bus de Objetos CI (Suite Completa)
 
-on: [push, pull_request]
+on:
+  push:
+    branches-ignore:
+      - main
+  pull_request:
 
 permissions:
   contents: read

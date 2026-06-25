@@ -36,6 +36,7 @@ class TestDispatcherList(unittest.TestCase):
         self.list_id = _dispatch_create("LIST")
 
     # ─── Operación válida ──────────────────────────────────────
+    @pytest.mark.regression
     @pytest.mark.test_id("TI-DS-18")
     def test_insert_valid(self):
         response = dispatch(make_list_insert(self.list_id, 10))

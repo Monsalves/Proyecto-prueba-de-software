@@ -20,6 +20,7 @@ from src.objects.tree_obj import (
 class TestTreeCreate(unittest.TestCase):
     """Pruebas de creación y destrucción."""
 
+    @pytest.mark.regression
     @pytest.mark.test_id("TU-T-01")
     def test_create_returns_tree_instance(self):
         t = tree_create()
@@ -66,6 +67,7 @@ class TestTreeInsert(unittest.TestCase):
         tree_insert(self.t, 5)
         self.assertEqual(tree_size(self.t), 1)
 
+    @pytest.mark.regression
     @pytest.mark.test_id("TU-T-08")
     def test_insert_multiple_elements(self):
         for v in [10, 5, 15, 3, 7]:
@@ -103,6 +105,7 @@ class TestTreeSearch(unittest.TestCase):
         for v in [10, 5, 15, 3, 7, 12, 20]:
             tree_insert(self.t, v)
 
+    @pytest.mark.regression
     @pytest.mark.test_id("TU-T-13")
     def test_search_existing_root(self):
         self.assertEqual(tree_search(self.t, 10), TREE_OK)
@@ -115,6 +118,7 @@ class TestTreeSearch(unittest.TestCase):
     def test_search_existing_right_subtree(self):
         self.assertEqual(tree_search(self.t, 20), TREE_OK)
 
+    @pytest.mark.regression
     @pytest.mark.test_id("TU-T-16")
     def test_search_nonexistent_value(self):
         self.assertEqual(tree_search(self.t, 99), TREE_NOT_FOUND)
@@ -267,6 +271,7 @@ class TestTreeInorder(unittest.TestCase):
         self.assertEqual(code, TREE_OK)
         self.assertEqual(result, [42])
 
+    @pytest.mark.regression
     @pytest.mark.test_id("TU-T-39")
     def test_inorder_sorted_output(self):
         for v in [10, 5, 15, 3, 7, 12, 20]:

@@ -38,6 +38,7 @@ class TestConcurrentInstanceCreation(unittest.TestCase):
     def setUp(self):
         _reset_server()
 
+    @pytest.mark.regression
     @pytest.mark.test_id("TC-01")
     def test_ten_threads_create_unique_ids(self):
         """10 hilos crean via Dispatcher simultáneamente → IDs únicos."""
@@ -140,6 +141,7 @@ class TestConcurrentOperationsOnSameInstance(unittest.TestCase):
     def setUp(self):
         _reset_server()
 
+    @pytest.mark.regression
     @pytest.mark.test_id("TC-05")
     def test_ten_threads_insert_list_no_corruption(self):
         """10 hilos insertan valores en la misma List vía Dispatcher."""

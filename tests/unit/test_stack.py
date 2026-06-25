@@ -14,6 +14,7 @@ from objects.stack_obj import (
 )
 
 class TestStackCreate(unittest.TestCase):
+    @pytest.mark.regression
     @pytest.mark.test_id("TU-S-01")
     def test_stack_create_returns_instance(self):
         """[Clase Válida] Verifica el retorno de instancia Stack."""
@@ -81,6 +82,7 @@ class TestStackDestroy(unittest.TestCase):
         self.assertEqual(stack_destroy(stk), STACK_OK)
 
 class TestStackPush(unittest.TestCase):
+    @pytest.mark.regression
     @pytest.mark.test_id("TU-S-11")
     def test_stack_push_valid(self):
         """[Clase Válida] Inserción normal."""
@@ -93,6 +95,7 @@ class TestStackPush(unittest.TestCase):
         """[Clase Inválida] Push en None."""
         self.assertEqual(stack_push(None, 7), STACK_NULL_PTR)
 
+    @pytest.mark.regression
     @pytest.mark.test_id("TU-S-13")
     def test_stack_push_lifo_order(self):
         """[Clase Válida] Múltiples ingresos para LIFO."""
@@ -121,6 +124,7 @@ class TestStackPop(unittest.TestCase):
         stack_push(self.stk, 100)
         stack_push(self.stk, 200)
 
+    @pytest.mark.regression
     @pytest.mark.test_id("TU-S-16")
     def test_stack_pop_valid(self):
         """[Clase Válida] Extraer último insertado."""
@@ -134,6 +138,7 @@ class TestStackPop(unittest.TestCase):
         code, val = stack_pop(None)
         self.assertEqual(code, STACK_NULL_PTR)
 
+    @pytest.mark.regression
     @pytest.mark.test_id("TU-S-18")
     def test_stack_pop_empty(self):
         """[Límite Inferior] Pop desde pila vacía."""

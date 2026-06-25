@@ -12,6 +12,7 @@ from protocol.serializer import (
 )
 
 class TestDeserializeMessage(unittest.TestCase):
+    @pytest.mark.regression
     @pytest.mark.test_id("TU-SE-01")
     def test_deserialize_valid_with_data(self):
         """[Clase Válida] Mensaje completo que requiere dato entero."""
@@ -40,6 +41,7 @@ class TestDeserializeMessage(unittest.TestCase):
         code2, msg2 = deserialize_message("")
         self.assertEqual(code2, DESER_ERROR)
 
+    @pytest.mark.regression
     @pytest.mark.test_id("TU-SE-04")
     def test_deserialize_missing_terminator(self):
         """[Caso Especial] String sin el salto de línea obligatorio."""
@@ -47,6 +49,7 @@ class TestDeserializeMessage(unittest.TestCase):
         code, msg = deserialize_message(raw)
         self.assertEqual(code, DESER_ERROR)
 
+    @pytest.mark.regression
     @pytest.mark.test_id("TU-SE-05")
     def test_deserialize_invalid_separators(self):
         """[Clase Inválida] Faltan separadores |."""
@@ -54,6 +57,7 @@ class TestDeserializeMessage(unittest.TestCase):
         code, msg = deserialize_message(raw)
         self.assertEqual(code, DESER_ERROR)
 
+    @pytest.mark.regression
     @pytest.mark.test_id("TU-SE-06")
     def test_deserialize_invalid_data_type(self):
         """[Clase Inválida] Operación que exige int recibe un string."""

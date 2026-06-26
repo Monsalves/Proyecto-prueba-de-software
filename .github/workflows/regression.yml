@@ -27,7 +27,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install pytest pytest-json-report pytest-cov
 
-      - name: Ejecutar Regresion Minima Etapa 5
+      - name: Ejecutar Regresion Etapa 5
         run: |
           PYTHONPATH=. pytest -m regression --tb=short --json-report --json-report-file=report_regresion.json
 
@@ -50,5 +50,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPORT_FILE: report_regresion.json
+          COVERAGE_FILE: coverage_regresion.xml
         run: |
           python scripts/publish_test_results.py

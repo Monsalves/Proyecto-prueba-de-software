@@ -2,9 +2,37 @@ import json
 import os
 import subprocess
 import sys
+import xml.etree.ElementTree as ET
 
 def _report_label(report_file):
     return "Regresion" if os.path.basename(report_file) == "report_regresion.json" else "Pruebas"
+
+def _default_coverage_file(report_file):
+    if os.path.basename(report_file) == "report_regresion.json":
+        return "coverage_regresion.xml"
+    return "coverage.xml"
+
+def load_coverage_summary(coverage_file):
+    """
+    Lee el XML de cobertura en formato Cobertura y devuelve un resumen simple.
+    """
+    if not coverage_file or not os.path.exists(coverage_file):
+        return None
+
+    try:
+        root = ET.parse(coverage_file).getroot()
+    except ET.ParseError:
+        return None
+
+    line_rate = float(root.attrib.get("line-rate", 0.0))
+    lines_covered = int(root.attrib.get("lines-covered", 0))
+    lines_valid = int(root.attrib.get("lines-valid", 0))
+
+    return {
+        "percentage": round(line_rate * 100, 2),
+        "lines_covered": lines_covered,
+        "lines_valid": lines_valid,
+    }
 
 def generate_markdown(report_file):
     """
@@ -31,6 +59,8 @@ def generate_markdown(report_file):
         pass
         
     report_label = _report_label(report_file)
+    coverage_file = os.environ.get("COVERAGE_FILE", _default_coverage_file(report_file))
+    coverage_summary = load_coverage_summary(coverage_file)
 
     lines = [
         f"## Reporte de {report_label} Automatica",
@@ -72,6 +102,15 @@ def generate_markdown(report_file):
         f"**Resumen:** {total} pruebas en total. {passed_count} ✅, {failed_count} ❌, {skipped_count} ⚠️.",
         ""
     ]
+
+    if coverage_summary:
+        header_summary.extend([
+            (
+                f"**Cobertura:** {coverage_summary['percentage']}% "
+                f"({coverage_summary['lines_covered']}/{coverage_summary['lines_valid']} lineas)."
+            ),
+            ""
+        ])
     
     return "\n".join(header_summary + lines)
 

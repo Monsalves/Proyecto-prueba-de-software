@@ -1,74 +1,117 @@
 # Bus de Objetos en Python
 
-## 🚀 Cómo Ejecutar el Proyecto
+Proyecto cliente-servidor para invocar operaciones remotas sobre List, Stack y Tree mediante sockets TCP y un protocolo de texto.
 
-Para ejecutar el proyecto localmente, necesitas abrir **dos terminales** diferentes en la raíz del proyecto.
+## Como Ejecutar
 
-### 1. Iniciar el Servidor (Terminal 1)
-En la primera terminal, inicia el servidor del bus de objetos:
+Abre dos terminales en la raiz del proyecto.
+
+### 1. Servidor
+
 ```bash
 python -m src.server.bus_server
 ```
-*(Dependiendo de tu sistema, puede que necesites usar `python3`)*
 
-### 2. Iniciar el Cliente de Pruebas (Terminal 2)
-En la segunda terminal, ejecuta el cliente de pruebas para conectarte al servidor e interactuar con el bus:
+Si tu entorno usa `python3`, ejecuta:
+
+```bash
+python3 -m src.server.bus_server
+```
+
+El servidor queda escuchando en `127.0.0.1:9999`.
+
+### 2. Cliente Grafico
+
+Tambien hay una interfaz grafica para operar el Bus de Objetos sin escribir comandos manuales:
+
+```bash
+python -m src.client.gui_client
+```
+
+En la ventana, usa host `127.0.0.1`, puerto `9999` y presiona `Conectar`.
+
+La GUI permite crear y operar listas, pilas y arboles BST; enviar mensajes crudos del protocolo; precargar datos de prueba; ejecutar un chequeo rapido; y ver resultados/errores en un historial legible.
+
+### 3. Cliente de Terminal
+
+El cliente interactivo original sigue disponible:
+
 ```bash
 python -m src.client.test_client
 ```
-*(Dependiendo de tu sistema, puede que necesites usar `python3`)*
 
----
+## Uso Rapido de la GUI
+
+1. Iniciar el servidor con `python -m src.server.bus_server`.
+2. Abrir la interfaz con `python -m src.client.gui_client`.
+3. En la ventana, mantener host `127.0.0.1` y puerto `9999`.
+4. Presionar `Conectar`.
+5. Usar las pestanas de Lista, Pila, Arbol o Protocolo para ejecutar operaciones.
+6. Para probar concurrencia manualmente, abrir una segunda ventana de la GUI y conectarla al mismo servidor.
+
+## Arquitectura
+
+La interfaz grafica esta en `src/client/gui_client.py` y es solo una capa de presentacion. Todas las operaciones se ejecutan mediante `src.client.bus_client.BusClient`, que encapsula conexion TCP, serializacion de solicitudes y lectura de respuestas.
+
+La GUI no modifica el protocolo, no llama directamente a las estructuras de datos y no duplica reglas de negocio.
+
+Formato de solicitud:
+
+```text
+OBJETO|OPERACION|ID_INSTANCIA|DATO\n
+```
+
+Ejemplos:
+
+```text
+LIST|CREATE|0|
+LIST|INSERT|1|42
+LIST|GET|1|0
+STACK|PUSH|2|10
+TREE|INORDER|3|
+```
+
+Formato de respuesta:
+
+```text
+OK|dato\n
+ERROR|codigo\n
+```
 
 ## Estructura del Proyecto
 
-La estructura del código está dividida lógicamente en código fuente, pruebas automatizadas y scripts de utilería, siguiendo el principio de responsabilidad única.
+```text
+src/
+  client/
+    bus_client.py      API TCP reutilizable
+    test_client.py     Cliente interactivo por terminal
+    gui_client.py      Cliente grafico
+  objects/
+    list_obj.py        Lista enlazada thread-safe
+    stack_obj.py       Pila thread-safe
+    tree_obj.py        Arbol BST thread-safe
+  protocol/
+    serializer.py      Serializacion y deserializacion del protocolo
+  server/
+    bus_server.py      Servidor TCP multi-hilo
+    dispatcher.py      Enrutador de operaciones
+    object_server.py   Registro thread-safe de instancias
+tests/
+  unit/                Pruebas unitarias
+  integration/         Pruebas de integracion
+  system/              Pruebas de sistema
+```
 
-### 📦 `src/` - Código Fuente Principal
+## Pruebas
 
-Contiene toda la lógica de negocio, manejo de red y estructuras de datos.
+Para ejecutar la suite disponible:
 
-- **`objects/`**: Estructuras de datos soportadas por el bus.
-  - `list_obj.py`: Implementación de una lista enlazada (List).
-  - `stack_obj.py`: Implementación de una pila (Stack).
-  - `tree_obj.py`: Implementación de un árbol binario (Tree).
+```bash
+python -m unittest
+```
 
-- **`protocol/`**: Protocolo de comunicación.
-  - `serializer.py`: Lógica para transformar comandos en texto plano ("serializar") y texto a objetos/comandos ("deserializar") para que viajen a través de la red (ej. `CREATE|LIST` o `INSERT|1|42`).
+Tambien puedes ejecutar pruebas especificas, por ejemplo:
 
-- **`server/`**: Orquestación y Conectividad.
-  - `object_server.py`: Servidor principal que expone las estructuras y maneja el estado general (instancias creadas, ciclo de vida).
-  - `dispatcher.py`: Enrutador de mensajes. Recibe un comando ya "deserializado" y decide a qué estructura (`objects/`) llamar o si delegarlo al servidor (`object_server.py`).
-
----
-
-### 🧪 `tests/` - Pruebas y Aseguramiento de Calidad
-
-Incluye una exhaustiva suite de pruebas para asegurar el correcto funcionamiento del bus en todo nivel. Todas las pruebas contienen IDs específicos en sus comentarios para trazabilidad.
-
-- **`unit/`**: Pruebas Unitarias aisladas.
-  - Prueban individualmente las estructuras de datos (`test_list.py`, `test_stack.py`, `test_tree.py`) y el motor de parseo (`test_serializer.py`).
-
-- **`integration/`**: Pruebas de Integración (bottom-up).
-  - Evalúan cómo interactúan los diferentes módulos entre sí.
-  - `test_serializer_dispatcher.py`: Evalúa el pase de mensajes entre Protocolo ↔ Dispatcher.
-  - `test_dispatcher_structures.py`: Evalúa el pase de mensajes entre Dispatcher ↔ Estructuras.
-  - `test_dispatcher_socket.py`: Evalúa el flujo de red (Sockets) ↔ Dispatcher.
-  - `test_dispatcher_object_server.py`: Evalúa el Dispatcher ↔ Creación de instancias.
-  - **`stubs/`**: Mocks de bajo nivel (`socket_stub.py`, `serializer_stub.py`) para falsificar la red durante las pruebas locales.
-  - **`concurrency/`**: Pruebas enfocadas en hilos (threads) y exclusión mutua para evitar condiciones de carrera.
-
----
-
-### 🛠️ `scripts/` - Utilidades
-
-Herramientas de automatización ajenas a la ejecución primaria del servidor.
-
-- `publish_test_results.py`: Script utilizado por GitHub Actions para extraer los `# ID` de las pruebas y crear/actualizar un _Issue_ con el resultado en GitHub.
-
----
-
-### ⚙️ Otros Archivos Importantes
-
-- `.github/workflows/ci.yml`: Archivo de configuración de Integración Continua. Define qué pasos ejecuta GitHub al hacer _push_, instalando `pytest`, generando el JSON e invocando el script de resultados.
-- `reporte_particion_equivalencia.md`: Documento de análisis y diseño de pruebas.
+```bash
+python -m unittest tests.system.test_bus_system
+```

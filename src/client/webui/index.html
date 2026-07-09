@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bus de Objetos | Interfaz Local</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="background-orb orb-a"></div>
+    <div class="background-orb orb-b"></div>
+    <div class="background-grid"></div>
+
+    <div class="app-shell">
+      <header class="hero">
+        <div class="hero-brand">
+          <span class="kicker">Bus de Objetos</span>
+          <h1>Panel de Control</h1>
+        </div>
+
+        <div class="hero-navbar">
+          <div class="navbar-item">
+            <span class="micro-label">Sesión activa</span>
+            <strong id="active-session-name">Cargando...</strong>
+          </div>
+          <div class="navbar-item">
+            <span class="micro-label">ID</span>
+            <strong id="active-session-id">Cargando...</strong>
+          </div>
+          <div class="navbar-item">
+            <span class="micro-label">Total</span>
+            <strong id="session-count">0</strong>
+          </div>
+          <div class="navbar-item">
+            <span class="micro-label">Endpoint</span>
+            <strong id="endpoint-preview">127.0.0.1:9999</strong>
+          </div>
+          <div class="navbar-item">
+            <span class="micro-label">PID</span>
+            <strong id="active-session-pid">-</strong>
+          </div>
+          <button type="button" class="primary compact-btn" id="new-session-btn">Nueva sesión</button>
+        </div>
+      </header>
+
+      <section class="session-rail panel">
+        <div class="section-head">
+          <div>
+            <p class="micro-label">Clientes locales</p>
+            <h2>Sesiones concurrentes</h2>
+          </div>
+          <p class="section-note">Cada pestaña mantiene conexion, historial y mensaje crudo por separado.</p>
+        </div>
+        <div id="session-tabs" class="session-tabs" role="tablist" aria-label="Sesiones del cliente"></div>
+      </section>
+
+      <main class="workspace">
+        <section class="sidebar panel">
+          <div class="section-head">
+            <div>
+              <p class="micro-label">Canal TCP</p>
+              <h2>Conexion</h2>
+            </div>
+            <span class="status-pill is-offline" id="connection-status">Desconectado</span>
+          </div>
+
+          <form id="connect-form" class="stack-form">
+            <label>
+              <span>Host</span>
+              <input id="host" name="host" type="text" value="127.0.0.1" />
+            </label>
+            <label>
+              <span>Puerto</span>
+              <input id="port" name="port" type="number" value="9999" />
+            </label>
+            <div class="button-group">
+              <button type="submit" class="primary">Conectar</button>
+              <button type="button" id="disconnect-btn">Desconectar</button>
+            </div>
+          </form>
+
+          <div class="sidebar-stack">
+            <article class="info-card accent-card">
+              <p class="micro-label">Estado</p>
+              <h3>Backend real</h3>
+              <p>Inicia `python -m src.server.bus_server` y usa esta UI como cliente local.</p>
+            </article>
+
+            <article class="info-card">
+              <p class="micro-label">Ruta actual</p>
+              <strong id="sidebar-endpoint">127.0.0.1:9999</strong>
+              <p>El adaptador web solo reenvia solicitudes al servidor TCP del proyecto.</p>
+            </article>
+
+            <div class="quick-actions">
+              <button type="button" id="preload-btn">Precargar datos</button>
+              <button type="button" id="clear-history-btn">Limpiar historial</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="main-panel panel">
+          <div class="operation-hero">
+            <div>
+              <p class="micro-label">Operacion remota</p>
+              <h2>Ejecuta comandos por estructura</h2>
+              <p>Selecciona una familia de operaciones y envia mensajes al servidor Python actual.</p>
+            </div>
+            <div class="structure-tabs" role="tablist" aria-label="Estructuras">
+              <button type="button" class="structure-tab is-active" data-tab="list">LIST</button>
+              <button type="button" class="structure-tab" data-tab="stack">STACK</button>
+              <button type="button" class="structure-tab" data-tab="tree">TREE</button>
+              <button type="button" class="structure-tab" data-tab="raw">PROTOCOLO</button>
+            </div>
+          </div>
+
+          <div class="structure-panels">
+            <section class="structure-panel is-active" data-panel="list">
+              <div class="selector-group">
+                <label>
+                  <span>Operación</span>
+                  <select class="action-select" data-structure="list" id="list-select"></select>
+                </label>
+              </div>
+              <div class="action-grid" id="list-actions"></div>
+            </section>
+            <section class="structure-panel" data-panel="stack">
+              <div class="selector-group">
+                <label>
+                  <span>Operación</span>
+                  <select class="action-select" data-structure="stack" id="stack-select"></select>
+                </label>
+              </div>
+              <div class="action-grid" id="stack-actions"></div>
+            </section>
+            <section class="structure-panel" data-panel="tree">
+              <div class="selector-group">
+                <label>
+                  <span>Operación</span>
+                  <select class="action-select" data-structure="tree" id="tree-select"></select>
+                </label>
+              </div>
+              <div class="action-grid" id="tree-actions"></div>
+            </section>
+            <section class="structure-panel raw-panel" data-panel="raw">
+              <div class="raw-layout">
+                <div class="raw-copy">
+                  <p class="micro-label">Modo avanzado</p>
+                  <h3>Mensaje crudo del protocolo</h3>
+                  <p>Escribe el request exactamente como lo espera el servidor y revisa la respuesta completa en el historial.</p>
+                </div>
+                <label>
+                  <span>Request</span>
+                  <textarea id="raw-message" rows="10">LIST|CREATE|0|</textarea>
+                </label>
+                <button type="button" class="primary" id="send-raw-btn">Enviar mensaje crudo</button>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section class="history-panel panel">
+          <div class="terminal-head">
+            <div>
+              <p class="micro-label">Actividad</p>
+              <h2>Historial de respuestas</h2>
+              <p id="history-caption">Respuestas y errores de la sesion activa.</p>
+            </div>
+            <div class="terminal-lights" aria-hidden="true">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+          <div id="history" class="history-log" aria-live="polite"></div>
+        </section>
+      </main>
+    </div>
+
+    <template id="action-card-template">
+      <form class="action-card">
+        <div class="action-header">
+          <h3></h3>
+          <p></p>
+        </div>
+        <div class="field-list"></div>
+        <button type="submit" class="primary">Ejecutar</button>
+      </form>
+    </template>
+
+    <script src="./app.js" type="module"></script>
+  </body>
+</html>

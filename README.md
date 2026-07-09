@@ -32,6 +32,31 @@ En la ventana, usa host `127.0.0.1`, puerto `9999` y presiona `Conectar`.
 
 La GUI permite crear y operar listas, pilas y arboles BST; enviar mensajes crudos del protocolo; precargar datos de prueba; ejecutar un chequeo rapido; y ver resultados/errores en un historial legible.
 
+### 2.b Interfaz Web Local
+
+Tambien puedes usar una interfaz local en HTML/CSS/JavaScript, servida por un adaptador Python minimo que solo actua como puente hacia el backend TCP existente:
+
+```bash
+python -m src.client.web_client_server
+```
+
+Luego abre `http://127.0.0.1:8080` en el navegador.
+
+Si quieres dejar todo listo con un solo comando, incluyendo arranque de servidor e interfaz:
+
+```bash
+bash scripts/start_local_ui.sh
+```
+
+La primera sesion que abra el navegador se conectara automaticamente a `127.0.0.1:9999` y ejecutara una precarga de datos.
+
+Notas:
+
+- La UI web no reimplementa estructuras ni logica de negocio.
+- El backend real sigue siendo `src.server.bus_server`.
+- Cada pestaña crea su propia sesion local, por lo que puedes abrir multiples clientes concurrentes.
+- Si quieres apuntar a otro host o puerto del servidor TCP, configuralo en la pantalla de conexion.
+
 ### 3. Cliente de Terminal
 
 El cliente interactivo original sigue disponible:
@@ -48,6 +73,14 @@ python -m src.client.test_client
 4. Presionar `Conectar`.
 5. Usar las pestanas de Lista, Pila, Arbol o Protocolo para ejecutar operaciones.
 6. Para probar concurrencia manualmente, abrir una segunda ventana de la GUI y conectarla al mismo servidor.
+
+## Uso Rapido de la Interfaz Web
+
+1. Iniciar el servidor con `python -m src.server.bus_server`.
+2. Iniciar la UI web con `python -m src.client.web_client_server`.
+3. Abrir `http://127.0.0.1:8080`.
+4. Conectar al host y puerto del backend TCP.
+5. Operar LIST, STACK, TREE, protocolo crudo o usar la precarga.
 
 ## Arquitectura
 
